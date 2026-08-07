@@ -118,6 +118,29 @@ def length_matched_deletion(
     return "".join(c for i, c in enumerate(sequence) if i not in idx)
 
 
+def contiguous_block_deletion(
+    sequence: str, n_remove: int, rng: np.random.Generator
+) -> str:
+    """Remove `n_remove` residues as one contiguous block at a random position.
+
+    The second control for knockout_motif_delete, and the more important of the
+    two. `length_matched_deletion` removes the same *number* of residues but
+    scatters them across the sequence, which creates many small local
+    disruptions; a motif knockout removes a few contiguous runs. Comparing a
+    knockout only against the scattered control confounds "which residues were
+    removed" with "how the removal was distributed".
+
+    Removing one block of the same size isolates the first question. Neither
+    control is perfect on its own - the motif knockout removes several runs,
+    not one block - but a knockout that sits between the two controls is
+    telling a different story from one that sits outside both.
+    """
+    if n_remove <= 0 or n_remove >= len(sequence):
+        return sequence
+    start = int(rng.integers(0, len(sequence) - n_remove + 1))
+    return sequence[:start] + sequence[start + n_remove :]
+
+
 def knockout_motif_substitute(
     sequence: str, pattern: str, rng: np.random.Generator
 ) -> tuple[str, int]:

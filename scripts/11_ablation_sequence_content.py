@@ -98,10 +98,21 @@ def build_edits(seq: str, rng: np.random.Generator) -> list[tuple[str, str, int]
         if removed == 0:
             continue  # motif absent; nothing to knock out, and no control needed
         edits.append((f"knockout_{motif}", edited, removed))
+        # Two controls, because they isolate different things: scattered
+        # removal creates many local disruptions, block removal creates one.
+        # A motif knockout removes several contiguous runs and so sits between
+        # them by construction.
         edits.append(
             (
-                f"length_control_{motif}",
+                f"scattered_control_{motif}",
                 ablations.length_matched_deletion(seq, removed, rng),
+                removed,
+            )
+        )
+        edits.append(
+            (
+                f"block_control_{motif}",
+                ablations.contiguous_block_deletion(seq, removed, rng),
                 removed,
             )
         )
@@ -185,8 +196,43 @@ def main() -> int:
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_csv, index=False)
 
+    # --- reference scale --------------------------------------------------
+    # A shift of 0.13 means nothing until you know how much predictions vary
+    # across real sequences in the first place. If the model's output spans
+    # only 0.15 across the whole natural dataset, a 0.13 shift is near-total;
+    # if it spans 0.8, it is modest. So we measure that span on the same
+    # probes and express every effect as a fraction of it.
+    base_preds = []
+    for si, seq in enumerate(probes):
+        p = predict(seq, args.seed + si)
+        if p is not None:
+            base_preds.append(p)
+    base_arr = np.vstack(base_preds)
+    ref_scale = float(np.mean(np.abs(base_arr - base_arr.mean(axis=0))))
+    print(f"\nreference scale: mean |deviation from the mean prediction| "
+          f"across the {len(base_preds)} unmodified probes = {ref_scale:.5f}")
+    print("  Effects below are also given as a fraction of this. A fraction "
+          "near 1 means\n  the edit moved the prediction as far as a different "
+          "natural sequence would.")
+
     # --- summary ---------------------------------------------------------
     floor_mean = floor["pooled_mean_abs_dev"]
+    # The model emits property values as text with three decimals, so any real
+    # difference between two predictions is at least 0.001. A "floor" of order
+    # 1e-17 is float rounding in the mean, not a measurement, and dividing by
+    # it produces meaningless ratios of order 1e16.
+    PREDICTION_RESOLUTION = 1e-4
+    floor_is_zero = floor_mean < PREDICTION_RESOLUTION
+    if floor_is_zero:
+        n_distinct = [p["n_distinct_outputs"] for p in floor["per_sequence"]]
+        print(f"\nnoise floor is below the model's own output resolution "
+              f"({floor_mean:.2e}).")
+        print(f"Greedy decoding made the forward task deterministic: "
+              f"{max(n_distinct)} distinct output(s)\nacross "
+              f"{floor['n_repeats']} repeats of each probe. Every effect below "
+              f"is therefore above\nthe floor by construction, and the ratio to "
+              f"it is not a meaningful quantity.")
+
     summary_rows = []
     for name, grp in df.groupby("ablation"):
         d = grp["abs_delta_mean"].to_numpy(dtype=float)
@@ -197,48 +243,63 @@ def main() -> int:
                 "mean_abs_delta": float(d.mean()),
                 "median_abs_delta": float(np.median(d)),
                 "sd_abs_delta": float(d.std(ddof=1)) if len(d) > 1 else 0.0,
-                "vs_noise_floor": float(d.mean() / floor_mean) if floor_mean > 0 else np.inf,
+                "frac_of_reference_scale": float(d.mean() / ref_scale)
+                if ref_scale > 0
+                else np.nan,
+                # None rather than a huge number when the floor is zero: a
+                # ratio to zero is not a measurement.
+                "vs_noise_floor": None if floor_is_zero else float(d.mean() / floor_mean),
                 "frac_below_noise_floor": float(np.mean(d < floor_mean)),
             }
         )
     summary = pd.DataFrame(summary_rows).sort_values("mean_abs_delta", ascending=False)
 
-    # Paired comparison of each knockout against its own length control.
+    # Paired comparison of each knockout against both of its controls.
     paired = []
     for motif in ("polyA", "GGX", "GPGXX"):
-        a = df[df["ablation"] == f"knockout_{motif}"].set_index("sequence_index")["abs_delta_mean"]
-        b = df[df["ablation"] == f"length_control_{motif}"].set_index("sequence_index")["abs_delta_mean"]
-        common = a.index.intersection(b.index)
-        if len(common) < 3:
-            continue
-        diff = (a.loc[common] - b.loc[common]).to_numpy(dtype=float)
-        entry = {
-            "motif": motif,
-            "n_paired": int(len(common)),
-            "mean_knockout": float(a.loc[common].mean()),
-            "mean_length_control": float(b.loc[common].mean()),
-            "mean_difference": float(diff.mean()),
-        }
-        try:
-            from scipy.stats import wilcoxon
+        idx = lambda tag: df[df["ablation"] == f"{tag}_{motif}"].set_index(  # noqa: E731
+            "sequence_index"
+        )["abs_delta_mean"]
+        a = idx("knockout")
+        entry = {"motif": motif}
+        for control in ("scattered_control", "block_control"):
+            b = idx(control)
+            common = a.index.intersection(b.index)
+            if len(common) < 3:
+                continue
+            diff = (a.loc[common] - b.loc[common]).to_numpy(dtype=float)
+            entry[f"n_paired_{control}"] = int(len(common))
+            entry["mean_knockout"] = float(a.loc[common].mean())
+            entry[f"mean_{control}"] = float(b.loc[common].mean())
+            entry[f"difference_vs_{control}"] = float(diff.mean())
+            entry[f"frac_knockout_larger_than_{control}"] = float(np.mean(diff > 0))
+            try:
+                from scipy.stats import wilcoxon
 
-            stat, p = wilcoxon(diff)
-            entry["wilcoxon_p"] = float(p)
-        except Exception:
-            # scipy is optional; report a sign test instead of nothing.
-            entry["frac_knockout_larger"] = float(np.mean(diff > 0))
-        paired.append(entry)
+                entry[f"wilcoxon_p_vs_{control}"] = float(wilcoxon(diff).pvalue)
+            except Exception:
+                pass  # scipy optional; the sign fraction above still reports
+        if len(entry) > 1:
+            paired.append(entry)
 
-    print("\nablation effect, mean |change| in the 8D prediction")
-    print(f"(noise floor = {floor_mean:.5f})\n")
-    print(summary.to_string(index=False, float_format=lambda x: f"{x:.5f}"))
+    print("\nablation effect, mean |change| in the 8D prediction\n")
+    show = summary.drop(columns=["vs_noise_floor", "frac_below_noise_floor"]) \
+        if floor_is_zero else summary
+    print(show.to_string(index=False, float_format=lambda x: f"{x:.5f}"))
 
     if paired:
-        print("\nmotif knockout vs its length-matched control:")
+        print("\nmotif knockout vs its two length-matched controls")
+        print("  scattered = same number of residues removed at random positions")
+        print("  block     = same number removed as one contiguous run\n")
         for e in paired:
-            print(f"  {e['motif']:8s} knockout {e['mean_knockout']:.5f} "
-                  f"vs control {e['mean_length_control']:.5f} "
-                  f"(difference {e['mean_difference']:+.5f})")
+            print(f"  {e['motif']}")
+            print(f"    knockout          {e['mean_knockout']:.5f}")
+            for c in ("scattered_control", "block_control"):
+                if f"mean_{c}" in e:
+                    print(f"    {c:17s} {e[f'mean_{c}']:.5f}   "
+                          f"(knockout - control = {e[f'difference_vs_{c}']:+.5f}, "
+                          f"knockout larger in "
+                          f"{e[f'frac_knockout_larger_than_{c}']:.0%} of pairs)")
 
     summary.to_csv(config.RESULTS / "ablation_sequence_content_summary.csv", index=False)
     path = runinfo.write_result(
@@ -248,6 +309,12 @@ def main() -> int:
             "n_probes": len(probes),
             "n_prediction_failures": n_pred_fail,
             "noise_floor": floor,
+            "reference_scale": ref_scale,
+            "reference_scale_definition": (
+                "mean |deviation from the mean prediction| across unmodified "
+                "probe sequences; the spread the model's output shows across "
+                "real silk sequences"
+            ),
             "summary": summary_rows,
             "knockout_vs_length_control": paired,
         },
