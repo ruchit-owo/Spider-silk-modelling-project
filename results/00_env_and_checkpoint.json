@@ -1,0 +1,45 @@
+{
+  "manifest": {
+    "script": "scripts/00_check_env.py",
+    "timestamp_utc": "2026-08-07T06:04:16+00:00",
+    "git_commit": null,
+    "git_dirty": false,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "model_name": "lamm-mit/SilkomeGPT"
+    }
+  },
+  "result": {
+    "n_parameters": 253556736,
+    "n_parameters_millions": 253.556736,
+    "paper_parameters_millions": 253.6,
+    "parameter_count_matches": true,
+    "architecture": {
+      "num_hidden_layers": 12,
+      "num_attention_heads": 8,
+      "hidden_size": 1024,
+      "intermediate_size": 4096,
+      "vocab_size": 50000,
+      "max_position_embeddings": 2048,
+      "model_type": "gpt_neox"
+    },
+    "architecture_mismatches": [],
+    "resolved_revision": "d5360a134ee319051fa947e53a63f6fda3488cba"
+  }
+}

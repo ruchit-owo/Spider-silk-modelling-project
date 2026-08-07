@@ -1,0 +1,120 @@
+{
+  "manifest": {
+    "script": "scripts/02_reproduce_table1.py",
+    "timestamp_utc": "2026-08-07T08:10:42+00:00",
+    "git_commit": null,
+    "git_dirty": false,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "n_per_set": 64,
+      "sets": [
+        "S1"
+      ],
+      "seed": 20260807,
+      "batch_size": 8,
+      "generation": {
+        "temperature": 1.25,
+        "top_k": 500,
+        "top_p": 0.8,
+        "max_new_tokens": 512,
+        "do_sample": true
+      },
+      "forward": {
+        "temperature": 1.0,
+        "top_k": 0,
+        "top_p": 1.0,
+        "max_new_tokens": 64,
+        "do_sample": false
+      },
+      "faithful_sampling": false
+    }
+  },
+  "result": {
+    "summaries": [
+      {
+        "set": "S1",
+        "target": [
+          0.25,
+          0.252,
+          0.2,
+          0.151,
+          0.31,
+          0.203,
+          0.293,
+          0.265
+        ],
+        "target_spread": 0.019465999999999997,
+        "paper_r2": 0.8899,
+        "n_generated": 63,
+        "n_novel": 20,
+        "n_forward_parsed": 63,
+        "n_scored": 20,
+        "r2_max": 0.7119593136751259,
+        "r2_mean": -8.150344189869516,
+        "r2_median": -1.453174766259119,
+        "r2_std": 15.347005842518676,
+        "r2_p05": -51.04921401417857,
+        "r2_p95": 0.17307613274427266,
+        "r2_min": -51.04921401417857,
+        "frac_above_paper_r2": 0.0,
+        "n_required_to_reach_paper_r2": null,
+        "mae_at_best": 0.022125,
+        "best_sequence": "PGSQGPGGQGPGGNGPSGPGGNGPSGPGGYGPSGPGGASAAAAAAASSGPGGQGPYGPGSQGPGGQGGQGPYGPGGQGGQGPYGPGGQGGQGPYGPGGQGGQGPYGPGSQGPGGQGPGGYGPSGPGGASAAAAAAASSGPGGQGPYGPGSQGPGGQGGQGPYGPGGQGGQGPYGPGGQGGQGPYGPGSQGPGGQGPGGYGPSGPGGASAAAAAAASSGPGGQGPYGPGSQGPGGQGPGGNGPSGPGGQGPGGNGPSGPGGNGPSGPGGYGPSGPGGASAAAAAAASSGPGGQGPYGPGSQGPGGQGGQGPYGPGGQGGQGPYGPGGQGGQGPYGPGSQGPGGYGISGPGGASAAAAAAASSGPGGQGPYGPGSQGPGGQGPGSYGPSGPGAASAAAAAASGGQGPYGPSQQGPGSYGPSGQISSVSASVSSAASRLSSPAASSRVSSAVSTLASSGPSDASVVSSALSNLVSQVSASQPGLSGCDVIVQALLELVSALVHILGSSSIGQVDYNSAGYSTQTVFTGHALMG",
+        "best_length": 530,
+        "best_of_n_curve": {
+          "1": {
+            "mean": -8.27817571663413,
+            "std": 15.038446693403897,
+            "p05": -51.04921401417857,
+            "p50": -1.8532312750436675,
+            "p95": 0.14471386006370102
+          },
+          "2": {
+            "mean": -1.8549981763074084,
+            "std": 5.303037963956004,
+            "p05": -12.234357341004834,
+            "p50": -0.11332579882872706,
+            "p95": 0.7119593136751259
+          },
+          "4": {
+            "mean": -0.20718177848556468,
+            "std": 1.2880709962166195,
+            "p05": -1.8532312750436675,
+            "p50": 0.059282852152470866,
+            "p95": 0.7119593136751259
+          },
+          "8": {
+            "mean": 0.2345910305147437,
+            "std": 0.4296090440409381,
+            "p05": -0.45052912770985354,
+            "p50": 0.14471386006370102,
+            "p95": 0.7119593136751259
+          },
+          "16": {
+            "mean": 0.4481371879173946,
+            "std": 0.30046801445684246,
+            "p05": 0.059282852152470866,
+            "p50": 0.7119593136751259,
+            "p95": 0.7119593136751259
+          }
+        }
+      }
+    ]
+  }
+}

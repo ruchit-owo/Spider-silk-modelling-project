@@ -1,0 +1,120 @@
+{
+  "manifest": {
+    "script": "scripts/01_smoke_test.py",
+    "timestamp_utc": "2026-08-07T06:07:36+00:00",
+    "git_commit": null,
+    "git_dirty": false,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {}
+  },
+  "result": {
+    "forward": {
+      "parsed": true,
+      "prediction": [
+        0.327,
+        0.356,
+        0.261,
+        0.287,
+        0.437,
+        0.19,
+        0.22,
+        0.301
+      ],
+      "seconds": 1.4067647457122803,
+      "raw_tail": " [0.327,0.356,0.261,0.287,0.437,0.190,0.220,0.301]"
+    },
+    "repeatability": {
+      "draws": [
+        [
+          0.327,
+          0.356,
+          0.261,
+          0.287,
+          0.437,
+          0.19,
+          0.22,
+          0.301
+        ],
+        [
+          0.327,
+          0.356,
+          0.261,
+          0.287,
+          0.437,
+          0.19,
+          0.22,
+          0.301
+        ],
+        [
+          0.327,
+          0.356,
+          0.261,
+          0.287,
+          0.437,
+          0.19,
+          0.22,
+          0.301
+        ],
+        [
+          0.327,
+          0.356,
+          0.261,
+          0.287,
+          0.437,
+          0.19,
+          0.22,
+          0.301
+        ],
+        [
+          0.327,
+          0.356,
+          0.261,
+          0.287,
+          0.437,
+          0.19,
+          0.22,
+          0.301
+        ]
+      ],
+      "n_distinct": 1
+    },
+    "inverse": {
+      "n_requested": 4,
+      "n_valid": 4,
+      "parse_stats": {
+        "attempted": 4,
+        "parsed": 4,
+        "rejected_unparseable": 0,
+        "rejected_invalid_aa": 0,
+        "rejected_not_novel": 0,
+        "notes": [],
+        "parse_rate": 1.0
+      },
+      "seconds": 2.0893020629882812,
+      "seconds_per_candidate": 0.5223255157470703,
+      "lengths": [
+        620,
+        338,
+        297,
+        317
+      ]
+    },
+    "projected_full_run_hours": 8.779504123263889
+  }
+}

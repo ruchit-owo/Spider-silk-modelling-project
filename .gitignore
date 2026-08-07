@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Large inputs that are not ours to redistribute. See data/raw/README.md.
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.json
+!data/raw/README.md
+
+# The authors' repo, unpacked. Fetch it from github.com/lamm-mit/SilkomeGPT.
+_ref/
+
+# Hugging Face cache, if pointed here.
+hf_cache/
+
+# Generation pools are large and regenerable; the summaries in results/*.json
+# and results/*.csv are committed.
+results/pools/

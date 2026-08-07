@@ -1,0 +1,91 @@
+{
+  "manifest": {
+    "script": "scripts/03_build_dataset.py",
+    "timestamp_utc": "2026-08-07T08:08:12+00:00",
+    "git_commit": null,
+    "git_dirty": false,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "fasta": "C:\\Users\\RUCHIT\\Downloads\\spider-silkome-database.v1.prot.fasta",
+      "mech": "C:\\Users\\RUCHIT\\Downloads\\mechanical_properties.csv"
+    }
+  },
+  "result": {
+    "n_fasta": 11155,
+    "n_mech_rows": 446,
+    "n_joined": 3778,
+    "n_complete": 3563,
+    "n_masp": 1033,
+    "expected_rows": 1033,
+    "row_count_matches_paper": true,
+    "n_distinct_sequences": 1028,
+    "n_duplicate_label_rows": 10,
+    "region_counts": {
+      "CTD": 553,
+      "NTD": 480
+    },
+    "type_counts": {
+      "MaSp1": 349,
+      "MaSp2": 331,
+      "MaSp": 223,
+      "MaSp3B": 47,
+      "MaSp3": 43,
+      "MaSp2B": 40
+    },
+    "normalisation": {
+      "source": "recovered_from_silkome_all_types",
+      "mins": [
+        0.005,
+        0.001,
+        0.38,
+        0.03,
+        0.17,
+        0.01,
+        5.1,
+        0.1
+      ],
+      "maxs": [
+        0.39,
+        0.136,
+        37.0,
+        9.76,
+        3.33,
+        0.8,
+        53.2,
+        13.7
+      ]
+    },
+    "worked_example_verification": {
+      "idv_id": 7305,
+      "verified": true,
+      "max_abs_error": 0.00047058823529416705,
+      "paper_values": [
+        0.327,
+        0.356,
+        0.261,
+        0.287,
+        0.437,
+        0.19,
+        0.22,
+        0.301
+      ]
+    },
+    "normalised_within_unit_interval": true
+  }
+}

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "silkrepro"
+version = "0.1.0"
+description = "Reproduction and extension of Lu, Kaplan & Buehler (2024), SilkomeGPT"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1",
+    "transformers>=4.40",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scikit-learn>=1.3",
+    "biopython>=1.81",
+    "matplotlib>=3.7",
+    "seaborn>=0.12",
+    "huggingface_hub>=0.20",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "slow: needs the model checkpoint and a GPU; deselect with -m 'not slow'",
+]

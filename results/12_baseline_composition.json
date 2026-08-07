@@ -1,0 +1,543 @@
+{
+  "manifest": {
+    "script": "scripts/12_baseline_composition.py",
+    "timestamp_utc": "2026-08-07T08:23:11+00:00",
+    "git_commit": null,
+    "git_dirty": false,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "folds": 5,
+      "seed": 20260807
+    }
+  },
+  "result": {
+    "n_pairs": 1033,
+    "normalisation_source": "table_s5",
+    "results": [
+      {
+        "feature_set": "composition",
+        "model": "ridge",
+        "mean_r2_in_sample_mechanical": 0.026117074694343156,
+        "mean_r2_cv_mechanical": 0.0014277289608885468,
+        "mean_r2_in_sample_all8": 0.022147301616056644,
+        "mean_r2_cv_all8": -0.0018006318101146724,
+        "per_property": [
+          {
+            "property": "toughness",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.02239598675917298,
+            "r2_cv_mean": -0.002588221422467085,
+            "r2_cv_std": 0.013601803022263374,
+            "r2_cv_predict_mean_baseline": -0.003381000013295177
+          },
+          {
+            "property": "toughness_sd",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.013097110151914393,
+            "r2_cv_mean": -0.01282264274660656,
+            "r2_cv_std": 0.01310302089947371,
+            "r2_cv_predict_mean_baseline": -0.0030301746700887922
+          },
+          {
+            "property": "E",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.02251733783946519,
+            "r2_cv_mean": -0.0009072532391826149,
+            "r2_cv_std": 0.01578965208503303,
+            "r2_cv_predict_mean_baseline": -0.008435108142382085
+          },
+          {
+            "property": "E_sd",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.023801472497218645,
+            "r2_cv_mean": 0.0027978949689077435,
+            "r2_cv_std": 0.01601791186470512,
+            "r2_cv_predict_mean_baseline": -0.004137564607814248
+          },
+          {
+            "property": "strength",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.016542834532217165,
+            "r2_cv_mean": -0.0024094055502078327,
+            "r2_cv_std": 0.013020835624082547,
+            "r2_cv_predict_mean_baseline": -0.0011285469125407398
+          },
+          {
+            "property": "strength_sd",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.025904595983094247,
+            "r2_cv_mean": -0.005086671521843167,
+            "r2_cv_std": 0.011299160940557282,
+            "r2_cv_predict_mean_baseline": -0.008742474112808596
+          },
+          {
+            "property": "strain",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.04301213964651729,
+            "r2_cv_mean": 0.01161579605541172,
+            "r2_cv_std": 0.016818100289636127,
+            "r2_cv_predict_mean_baseline": -0.012337153032000092
+          },
+          {
+            "property": "strain_sd",
+            "feature_set": "composition",
+            "model": "ridge",
+            "r2_in_sample": 0.009906935518853244,
+            "r2_cv_mean": -0.005004551024929582,
+            "r2_cv_std": 0.007130781074494708,
+            "r2_cv_predict_mean_baseline": -0.0013420578149247575
+          }
+        ]
+      },
+      {
+        "feature_set": "composition",
+        "model": "gbm",
+        "mean_r2_in_sample_mechanical": 0.7988162068718443,
+        "mean_r2_cv_mechanical": -0.15531000756389712,
+        "mean_r2_in_sample_all8": 0.7987651829860004,
+        "mean_r2_cv_all8": -0.18578664664333494,
+        "per_property": [
+          {
+            "property": "toughness",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.8107953489725335,
+            "r2_cv_mean": -0.18014432566764418,
+            "r2_cv_std": 0.06069531222850722,
+            "r2_cv_predict_mean_baseline": -0.003381000013295177
+          },
+          {
+            "property": "toughness_sd",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.8012654373384145,
+            "r2_cv_mean": -0.2247472019250381,
+            "r2_cv_std": 0.05648896640068674,
+            "r2_cv_predict_mean_baseline": -0.0030301746700887922
+          },
+          {
+            "property": "E",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.8172164726292471,
+            "r2_cv_mean": -0.14912528384890694,
+            "r2_cv_std": 0.0763423218953723,
+            "r2_cv_predict_mean_baseline": -0.008435108142382085
+          },
+          {
+            "property": "E_sd",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.8108073886506824,
+            "r2_cv_mean": -0.29864896702567467,
+            "r2_cv_std": 0.09270064351552251,
+            "r2_cv_predict_mean_baseline": -0.004137564607814248
+          },
+          {
+            "property": "strength",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.7822104137115999,
+            "r2_cv_mean": -0.15143299407345007,
+            "r2_cv_std": 0.02644187145776685,
+            "r2_cv_predict_mean_baseline": -0.0011285469125407398
+          },
+          {
+            "property": "strength_sd",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.799468692699006,
+            "r2_cv_mean": -0.20054682035755594,
+            "r2_cv_std": 0.045369390707630235,
+            "r2_cv_predict_mean_baseline": -0.008742474112808596
+          },
+          {
+            "property": "strain",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.7850425921739969,
+            "r2_cv_mean": -0.14053742666558722,
+            "r2_cv_std": 0.08756806576134578,
+            "r2_cv_predict_mean_baseline": -0.012337153032000092
+          },
+          {
+            "property": "strain_sd",
+            "feature_set": "composition",
+            "model": "gbm",
+            "r2_in_sample": 0.783315117712523,
+            "r2_cv_mean": -0.14111015358282225,
+            "r2_cv_std": 0.02881339816094472,
+            "r2_cv_predict_mean_baseline": -0.0013420578149247575
+          }
+        ]
+      },
+      {
+        "feature_set": "composition+motifs",
+        "model": "ridge",
+        "mean_r2_in_sample_mechanical": 0.024870292533870658,
+        "mean_r2_cv_mechanical": 0.003523215088584697,
+        "mean_r2_in_sample_all8": 0.020900348670899016,
+        "mean_r2_cv_all8": -0.00037936460029175953,
+        "per_property": [
+          {
+            "property": "toughness",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.022350777177065462,
+            "r2_cv_mean": 0.0011878474457293065,
+            "r2_cv_std": 0.009686375111967523,
+            "r2_cv_predict_mean_baseline": -0.003381000013295177
+          },
+          {
+            "property": "toughness_sd",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.011940332088394956,
+            "r2_cv_mean": -0.011341088406179024,
+            "r2_cv_std": 0.01063108789490029,
+            "r2_cv_predict_mean_baseline": -0.0030301746700887922
+          },
+          {
+            "property": "E",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.01888141864484083,
+            "r2_cv_mean": -0.0018269457069471473,
+            "r2_cv_std": 0.015909447850913982,
+            "r2_cv_predict_mean_baseline": -0.008435108142382085
+          },
+          {
+            "property": "E_sd",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.022735581987123776,
+            "r2_cv_mean": 0.002001322453968424,
+            "r2_cv_std": 0.015759013631547313,
+            "r2_cv_predict_mean_baseline": -0.004137564607814248
+          },
+          {
+            "property": "strength",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.015919258434887174,
+            "r2_cv_mean": -0.00015659536354495351,
+            "r2_cv_std": 0.0097287082648543,
+            "r2_cv_predict_mean_baseline": -0.0011285469125407398
+          },
+          {
+            "property": "strength_sd",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.024216363167718358,
+            "r2_cv_mean": -0.0031254856538334374,
+            "r2_cv_std": 0.009582175217928117,
+            "r2_cv_predict_mean_baseline": -0.008742474112808596
+          },
+          {
+            "property": "strain",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.04232971587868917,
+            "r2_cv_mean": 0.014888553979101582,
+            "r2_cv_std": 0.0183637154207904,
+            "r2_cv_predict_mean_baseline": -0.012337153032000092
+          },
+          {
+            "property": "strain_sd",
+            "feature_set": "composition+motifs",
+            "model": "ridge",
+            "r2_in_sample": 0.008829341988472406,
+            "r2_cv_mean": -0.004662525550628826,
+            "r2_cv_std": 0.0076270972423308795,
+            "r2_cv_predict_mean_baseline": -0.0013420578149247575
+          }
+        ]
+      },
+      {
+        "feature_set": "composition+motifs",
+        "model": "gbm",
+        "mean_r2_in_sample_mechanical": 0.7978936617313672,
+        "mean_r2_cv_mechanical": -0.15509706190394792,
+        "mean_r2_in_sample_all8": 0.7992056461921061,
+        "mean_r2_cv_all8": -0.17665764519256202,
+        "per_property": [
+          {
+            "property": "toughness",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.8133013179570251,
+            "r2_cv_mean": -0.16527944072580839,
+            "r2_cv_std": 0.056832889491045244,
+            "r2_cv_predict_mean_baseline": -0.003381000013295177
+          },
+          {
+            "property": "toughness_sd",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.8109833058785442,
+            "r2_cv_mean": -0.19704215509566633,
+            "r2_cv_std": 0.04447919949158272,
+            "r2_cv_predict_mean_baseline": -0.0030301746700887922
+          },
+          {
+            "property": "E",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.817756525379117,
+            "r2_cv_mean": -0.12304542794339487,
+            "r2_cv_std": 0.07061108706970062,
+            "r2_cv_predict_mean_baseline": -0.008435108142382085
+          },
+          {
+            "property": "E_sd",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.8103350859397046,
+            "r2_cv_mean": -0.28643357431960037,
+            "r2_cv_std": 0.109368765061308,
+            "r2_cv_predict_mean_baseline": -0.004137564607814248
+          },
+          {
+            "property": "strength",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.7818441939892178,
+            "r2_cv_mean": -0.15894169787295906,
+            "r2_cv_std": 0.037281640876901966,
+            "r2_cv_predict_mean_baseline": -0.0011285469125407398
+          },
+          {
+            "property": "strength_sd",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.794383733846189,
+            "r2_cv_mean": -0.19888271480292125,
+            "r2_cv_std": 0.05332989678641471,
+            "r2_cv_predict_mean_baseline": -0.008742474112808596
+          },
+          {
+            "property": "strain",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.7786726096001095,
+            "r2_cv_mean": -0.17312168107362935,
+            "r2_cv_std": 0.10861564139817238,
+            "r2_cv_predict_mean_baseline": -0.012337153032000092
+          },
+          {
+            "property": "strain_sd",
+            "feature_set": "composition+motifs",
+            "model": "gbm",
+            "r2_in_sample": 0.7863683969469418,
+            "r2_cv_mean": -0.11051446970651653,
+            "r2_cv_std": 0.06205078594955153,
+            "r2_cv_predict_mean_baseline": -0.0013420578149247575
+          }
+        ]
+      },
+      {
+        "feature_set": "dipeptide",
+        "model": "ridge",
+        "mean_r2_in_sample_mechanical": 0.09995918860339134,
+        "mean_r2_cv_mechanical": 0.014298117908312329,
+        "mean_r2_in_sample_all8": 0.09331616634922829,
+        "mean_r2_cv_all8": 0.007311921822499378,
+        "per_property": [
+          {
+            "property": "toughness",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.10024484608201811,
+            "r2_cv_mean": 0.01507459645884246,
+            "r2_cv_std": 0.007493992232563343,
+            "r2_cv_predict_mean_baseline": -0.003381000013295177
+          },
+          {
+            "property": "toughness_sd",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.09240975323480993,
+            "r2_cv_mean": 0.0025260188764580247,
+            "r2_cv_std": 0.016577975957080382,
+            "r2_cv_predict_mean_baseline": -0.0030301746700887922
+          },
+          {
+            "property": "E",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.10039304336934962,
+            "r2_cv_mean": 0.024648438124063966,
+            "r2_cv_std": 0.01179420601243419,
+            "r2_cv_predict_mean_baseline": -0.008435108142382085
+          },
+          {
+            "property": "E_sd",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.09259009020633757,
+            "r2_cv_mean": 0.015790709687612002,
+            "r2_cv_std": 0.01886115321780201,
+            "r2_cv_predict_mean_baseline": -0.004137564607814248
+          },
+          {
+            "property": "strength",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.0827475295533997,
+            "r2_cv_mean": -0.004873786409487435,
+            "r2_cv_std": 0.014925726585424381,
+            "r2_cv_predict_mean_baseline": -0.0011285469125407398
+          },
+          {
+            "property": "strength_sd",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.0842819944124773,
+            "r2_cv_mean": -0.020139903484553922,
+            "r2_cv_std": 0.011951879415544991,
+            "r2_cv_predict_mean_baseline": -0.008742474112808596
+          },
+          {
+            "property": "strain",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.11645133540879793,
+            "r2_cv_mean": 0.02234322345983033,
+            "r2_cv_std": 0.03507780424513462,
+            "r2_cv_predict_mean_baseline": -0.012337153032000092
+          },
+          {
+            "property": "strain_sd",
+            "feature_set": "dipeptide",
+            "model": "ridge",
+            "r2_in_sample": 0.07741073852663616,
+            "r2_cv_mean": 0.003126077867229604,
+            "r2_cv_std": 0.017591400957687204,
+            "r2_cv_predict_mean_baseline": -0.0013420578149247575
+          }
+        ]
+      },
+      {
+        "feature_set": "dipeptide",
+        "model": "gbm",
+        "mean_r2_in_sample_mechanical": 0.870185678679968,
+        "mean_r2_cv_mechanical": -0.13001250300183675,
+        "mean_r2_in_sample_all8": 0.8653496215573793,
+        "mean_r2_cv_all8": -0.16660117966699373,
+        "per_property": [
+          {
+            "property": "toughness",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8774961206069789,
+            "r2_cv_mean": -0.1525034632242442,
+            "r2_cv_std": 0.08518376587212328,
+            "r2_cv_predict_mean_baseline": -0.003381000013295177
+          },
+          {
+            "property": "toughness_sd",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8512512604271137,
+            "r2_cv_mean": -0.177468801938921,
+            "r2_cv_std": 0.041615132155677095,
+            "r2_cv_predict_mean_baseline": -0.0030301746700887922
+          },
+          {
+            "property": "E",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8745620078598019,
+            "r2_cv_mean": -0.07286164521984455,
+            "r2_cv_std": 0.07392474056264062,
+            "r2_cv_predict_mean_baseline": -0.008435108142382085
+          },
+          {
+            "property": "E_sd",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8681896728334391,
+            "r2_cv_mean": -0.2801000695030984,
+            "r2_cv_std": 0.11192588473300107,
+            "r2_cv_predict_mean_baseline": -0.004137564607814248
+          },
+          {
+            "property": "strength",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8663379897708546,
+            "r2_cv_mean": -0.16196519419734026,
+            "r2_cv_std": 0.06739570506836709,
+            "r2_cv_predict_mean_baseline": -0.0011285469125407398
+          },
+          {
+            "property": "strength_sd",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8822296308794316,
+            "r2_cv_mean": -0.23610949448190666,
+            "r2_cv_std": 0.055245686178540254,
+            "r2_cv_predict_mean_baseline": -0.008742474112808596
+          },
+          {
+            "property": "strain",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8623465964822363,
+            "r2_cv_mean": -0.1327197093659181,
+            "r2_cv_std": 0.13056339082009694,
+            "r2_cv_predict_mean_baseline": -0.012337153032000092
+          },
+          {
+            "property": "strain_sd",
+            "feature_set": "dipeptide",
+            "model": "gbm",
+            "r2_in_sample": 0.8403836935991781,
+            "r2_cv_mean": -0.1190810594046765,
+            "r2_cv_std": 0.027958474063036903,
+            "r2_cv_predict_mean_baseline": -0.0013420578149247575
+          }
+        ]
+      }
+    ],
+    "within_vector_composition_ridge": {
+      "mean": -1.7028358216342996,
+      "median": -0.22017172748497837,
+      "max": 0.6967428788665602,
+      "frac_positive": 0.3823814133591481
+    },
+    "species_grouped_cv_ridge_composition": [
+      -0.04231117411504406,
+      -0.06418352468543417,
+      -0.09890368354626566,
+      -0.04122721949112544,
+      -0.056020070600325766,
+      -0.008486114138363376,
+      0.0029917172195357278,
+      -0.07582013377098237
+    ]
+  }
+}
