@@ -112,10 +112,19 @@ def fig_bestofn() -> None:
     ax.set_xscale("log", base=2)
     ax.set_xlabel("N candidates sampled, then best kept")
     ax.set_ylabel(r"expected best $R^2$")
+
+    # The N=1 values run to about -11 for some sets and would compress the
+    # region that matters into a sliver. Clip the view and say so, rather than
+    # silently dropping points.
+    ax.set_ylim(-2.0, 1.0)
+    below = df[(df["n"] <= 2) & (df["mean"] < -2.0)]["set"].nunique()
+    note = (f"\ny-axis clipped at -2; N=1 means fall below it for "
+            f"{below} of {df['set'].nunique()} sets") if below else ""
     ax.set_title("Reported performance grows with the sampling budget alone\n"
-                 "(dotted lines: the paper's reported value for each set)",
+                 "(dotted lines: the paper's reported value for each set)"
+                 + note,
                  fontsize=9)
-    ax.legend(frameon=False, fontsize=7, ncol=2)
+    ax.legend(frameon=False, fontsize=7, ncol=2, loc="lower right")
     fig.savefig(config.FIGURES / "fig2_bestofn.png")
     plt.close(fig)
     print("wrote fig2_bestofn.png")

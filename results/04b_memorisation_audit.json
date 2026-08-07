@@ -1,0 +1,61 @@
+{
+  "manifest": {
+    "script": "scripts/04b_memorisation_audit.py",
+    "timestamp_utc": "2026-08-07T19:00:22+00:00",
+    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "git_dirty": true,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "tol": 0.0005
+    }
+  },
+  "result": {
+    "n_rows": 1026,
+    "n_exact": 732,
+    "exact_fraction": 0.7134502923976608,
+    "tolerance": 0.0005,
+    "mean_abs_error_memorised": 0.00024957169788231067,
+    "mean_abs_error_other": 0.10857169100411602,
+    "r2_all_rows": [
+      0.8064618655730412,
+      0.7410211466974186,
+      0.5779722387412123,
+      0.3894954890482104,
+      0.7205575375939903,
+      0.5664134232132665,
+      0.6806921220238485,
+      0.644365082138522
+    ],
+    "r2_non_memorised_rows": [
+      0.34163583384284835,
+      0.26457317078077247,
+      -0.5961666580624598,
+      -2.3625155486989273,
+      0.007403384232869348,
+      -0.48905790824015316,
+      -0.20432631727289752,
+      -0.09016975094644697
+    ],
+    "mean_r2_mechanical_all": 0.6964209409830231,
+    "mean_r2_mechanical_non_memorised": -0.11286343931490991,
+    "median_length_memorised": 361.0,
+    "median_length_non_memorised": 456.0,
+    "caveat": "Rows are selected on the outcome, so the non-memorised R2 is a diagnostic, not an unbiased generalisation estimate. A held-out score would require retraining, which this project does not do."
+  }
+}

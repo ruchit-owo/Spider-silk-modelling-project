@@ -209,6 +209,34 @@ reported rather than removed.
 count residues directly instead of calling either, so no downstream number
 depends on which Biopython is installed.
 
+## A15 — Amino-acid classification for the composition analysis
+
+**The source does not specify this.** `scripts/14_composition_association.py`
+follows Supplementary Note 8 of Pandey, Chen & Keten (*Commun. Mater.* 2024),
+which groups residues into hydrophobic / polar / charged panels and normalises
+the composition difference *within* each group (its Supplementary Equation 3).
+It never gives the assignment table. Because the normalisation is within-group,
+the grouping determines the resulting bar heights directly — this is not a
+cosmetic choice.
+
+**Assumed.** Two standard schemes, both implemented and both reported
+(`src/silkrepro/aa_groups.py`):
+
+| | hydrophobic | polar | charged |
+|---|---|---|---|
+| A (Lehninger-style) | A V L I P F M W G | S T C Y N Q | D E K R H |
+| B (alternative) | A V L I P F M W C Y | S T N Q G H | D E K R |
+
+They differ only on C, G, H and Y — the residues whose classification is
+genuinely contested. Everything else is assigned identically in any textbook
+treatment.
+
+**Reasoning.** Picking one scheme and presenting its output as *the* result
+would hide a choice that changes the output. Running both converts an
+unavoidable ambiguity into a measured sensitivity. Neither scheme was selected
+to improve agreement with the published residue list; as it happens both
+recover 12 of the 14 reported residues, and they disagree only on H, Y and F.
+
 ## A14 — Secondary-structure convention
 
 See `docs/discrepancies.md` entry **D1**, which this assumption exists to

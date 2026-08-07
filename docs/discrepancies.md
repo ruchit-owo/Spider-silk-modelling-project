@@ -195,6 +195,87 @@ the forward task nonetheless returns exactly the published vector
 strongest single confirmation that we have the right checkpoint and the right
 prompt format.
 
+## D10 — We do not reach the reported R² on any of the eight property sets
+
+**Status: confirmed. This is the reproduction's main shortfall.**
+
+Generating 2,048 candidates per set with the released checkpoint and the
+notebook's decoding settings, our maximum falls below the published value on
+all eight sets, by between 0.011 (F3) and 0.436 (S4), mean 0.27. In no set did
+any of ~700–800 scoreable candidates reach the published figure.
+
+One candidate explanation was tested and **rejected**: our greedy forward
+decoding (A5) removes scoring noise that the notebook's sampled decoding
+carries, and a maximum over noisy scores is inflated. Re-scoring the identical
+candidates with the notebook's sampled decoder moved the maximum by +0.0065 on
+average (`scripts/10b_scoring_stochasticity.py`), nowhere near enough.
+
+Remaining candidate explanations, which we cannot distinguish from the
+information available: a larger effective candidate pool in the original run
+(ours is ~771 scoreable per set after the 62.3% verbatim-copy rate, see D6), a
+different random seed, or a selection step present in the original work but not
+described in the paper or the released notebook.
+
+We record this as an unexplained gap rather than attributing it to any of these.
+The mechanism the paper describes reproduces; the magnitude does not.
+
+## D11 — The forward task reproduces 71% of training labels exactly
+
+**Status: confirmed.**
+
+Of the 1,026 fine-tuning pairs the model successfully scored, **732 (71.3%)**
+come back with all eight property values identical to the training label, to
+within 0.0005 — the model's own output resolution. Mean absolute error on those
+rows is 0.00025. On the remaining 294 rows it is 0.109, and the mean R² over
+the four mechanical properties is **−0.113**, worse than predicting the dataset
+mean.
+
+So the in-sample R² of 0.696 (§8d of `RESULTS.md`) is composed mostly of exact
+label retrieval rather than prediction from sequence.
+
+Three things this is not:
+
+- **Not a contradiction of any claim.** The paper fine-tunes on all known pairs,
+  says so plainly, reports self-consistency rather than held-out accuracy, and
+  makes no generalisation claim. Memorisation is the expected consequence of
+  training on everything and evaluating on the same data, which is what the
+  design implies.
+- **Not a generalisation estimate.** The non-memorised rows are selected on the
+  outcome and differ systematically from the rest (median length 456 vs 361),
+  so −0.113 is a diagnostic, not a held-out score.
+- **Not isolated.** It is consistent with three other measurements: 62.3% of
+  inverse-task generations are verbatim training sequences (D6); the model's
+  accuracy collapses on non-MaSp spidroins it never saw (+0.83 → −0.27…−0.54);
+  and its predictions barely vary with spidroin family at all (between/within
+  spread ratio 0.162). The same behaviour shows up in both task directions.
+
+## D12 — A reviewer comment described a different paper's Figure 7
+
+**Status: clarification, recorded for provenance.**
+
+During this work a reviewer comment recommended reproducing "Figure 7" by
+slicing the dataset into top-10/bottom-10 by property, computing per-residue
+composition via "Eq. S2", forming `Cdiff` via "Eq. S3", grouping residues as
+hydrophobic/polar/charged, and comparing against the residues
+V I P L F T Q Y N S D E K R.
+
+That describes **Supplementary Note 8 and Supplementary Figure 7 of Pandey,
+Chen & Keten, *Commun. Mater.* 2024**, not Figure 7 of Lu, Kaplan & Buehler.
+The equations, the top-10/bottom-10 slicing, the three-group normalisation and
+the residue list all appear verbatim in that paper's supplementary file. Lu et
+al.'s Figure 7 is a motif count and positional-KDE analysis using the motif
+definitions of its own Table S4.
+
+The confusion is easy to make: the supplementary PDF supplied for this project
+was that paper's, not Lu et al.'s (see D7).
+
+We implemented the analysis anyway, as
+`scripts/14_composition_association.py`, because it is a useful model-free
+companion to the ablations — but labelled as reproducing the Keten
+supplementary analysis, not Lu et al.'s Figure 7. The reviewer's methodological
+point, that the residue grouping is unspecified and must be chosen and stated
+explicitly, was correct and is handled as assumption A15.
+
 ## D9 — Argument order of `r2_score` differs between two places in the released code
 
 **Status: clarification, no effect on the published numbers.**

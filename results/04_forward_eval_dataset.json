@@ -1,0 +1,117 @@
+{
+  "manifest": {
+    "script": "scripts/04_forward_eval_dataset.py",
+    "timestamp_utc": "2026-08-07T18:25:14+00:00",
+    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "git_dirty": true,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "limit": null,
+      "seed": 20260807,
+      "forward": {
+        "temperature": 1.0,
+        "top_k": 0,
+        "top_p": 1.0,
+        "max_new_tokens": 64,
+        "do_sample": false
+      }
+    }
+  },
+  "result": {
+    "n_pairs": 1033,
+    "n_parsed": 1026,
+    "parse_rate": 0.9932236205227493,
+    "normalisation_source": "table_s5",
+    "per_property": [
+      {
+        "property": "toughness",
+        "r2_in_sample": 0.8064618655730406,
+        "pearson_r": 0.9001567043040444,
+        "mae_normalised": 0.022265119870383033,
+        "target_sd": 0.17487580454803767,
+        "pred_sd": 0.16732691052255616
+      },
+      {
+        "property": "toughness_sd",
+        "r2_in_sample": 0.7410211466974164,
+        "pearson_r": 0.8674525690628568,
+        "mae_normalised": 0.033215724496426194,
+        "target_sd": 0.1925203957880158,
+        "pred_sd": 0.1874496384341142
+      },
+      {
+        "property": "E",
+        "r2_in_sample": 0.5779722387412124,
+        "pearson_r": 0.7913789586991491,
+        "mae_normalised": 0.027638572430834417,
+        "target_sd": 0.13240332111491188,
+        "pred_sd": 0.1327817518891976
+      },
+      {
+        "property": "E_sd",
+        "r2_in_sample": 0.38949548904821085,
+        "pearson_r": 0.7390280603522638,
+        "mae_normalised": 0.03675192417494567,
+        "target_sd": 0.16320827068419358,
+        "pred_sd": 0.18403249694321866
+      },
+      {
+        "property": "strength",
+        "r2_in_sample": 0.7205575375939892,
+        "pearson_r": 0.8540158393860671,
+        "mae_normalised": 0.029480975645865645,
+        "target_sd": 0.16404609307599358,
+        "pred_sd": 0.15540506606003737
+      },
+      {
+        "property": "strength_sd",
+        "r2_in_sample": 0.5664134232132687,
+        "pearson_r": 0.7769504482248301,
+        "mae_normalised": 0.03853565400843881,
+        "target_sd": 0.16546498129473844,
+        "pred_sd": 0.16029909393632563
+      },
+      {
+        "property": "strain",
+        "r2_in_sample": 0.6806921220238489,
+        "pearson_r": 0.8384112743388228,
+        "mae_normalised": 0.026862107046317533,
+        "target_sd": 0.12848443630579945,
+        "pred_sd": 0.12624461165917467
+      },
+      {
+        "property": "strain_sd",
+        "r2_in_sample": 0.6443650821385225,
+        "pearson_r": 0.8233875823133252,
+        "mae_normalised": 0.035563868822382744,
+        "target_sd": 0.16000957376897373,
+        "pred_sd": 0.1607335705470499
+      }
+    ],
+    "mean_r2_mechanical": 0.6964209409830228,
+    "mean_r2_sd_slots": 0.5853237852743547,
+    "within_vector": {
+      "mean": 0.022671011913721357,
+      "median": 0.9999882084580833,
+      "max": 0.9999994031499657,
+      "frac_positive": 0.8255360623781677
+    },
+    "in_sample_warning": "The paper fine-tunes on all known pairs, so every sequence scored here was in the training set. These are training-set numbers, not generalisation estimates."
+  }
+}

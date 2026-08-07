@@ -242,16 +242,195 @@ unrelated. Since the paper fine-tunes on all 1,033 pairs and holds nothing out
 (`docs/discrepancies.md` D5), that warning applies to any forward-task accuracy
 measured on them, including ours.
 
-## 8. Extension — best-of-N selection
+## 8. Table 1 — partial reproduction
 
-**pending.** The 2,048-candidate × 8-set run is in progress; 3 of 8 property
-sets complete at the time of writing. This section will carry the best-of-N
-curves, the single-sample distribution, and the number of samples needed to
-reach each published value.
+**measured** (`scripts/02_reproduce_table1.py`, 2,048 candidates per set,
+8 sets, ~4.5 h)
 
-Early signal from the completed pilot (set S1, N=64): pool maximum 0.712 against
-a paper value of 0.8899, with mean −8.15 and median −1.45 over 20 scoreable
-candidates. Single samples are mostly far below the reported figure.
+| set | paper R² | our max | our mean | our median | scoreable pool |
+|---|---|---|---|---|---|
+| F1 | 0.8764 | 0.7221 | −0.36 | −0.03 | 815 |
+| F2 | 0.8369 | 0.6964 | −3.57 | −1.41 | 739 |
+| F3 | 0.6889 | **0.6780** | −0.36 | +0.09 | 735 |
+| S1 | 0.8899 | 0.7120 | −6.54 | −2.25 | 712 |
+| S2 | 0.5640 | 0.2234 | −0.71 | −0.67 | 738 |
+| S3 | 0.7167 | 0.6494 | −0.37 | −0.31 | 752 |
+| S4 | 0.7843 | 0.3487 | −0.49 | −0.48 | 710 |
+| S5 | 0.7751 | 0.6233 | −11.59 | −3.61 | 641 |
+
+**We do not reach the paper's value in any of the eight sets.** The gap ranges
+from 0.011 (F3, essentially reproduced) to 0.436 (S4). Mean gap 0.27. In no set
+did any of ~700–800 candidates match or exceed the published figure.
+
+The direction and the mechanism reproduce; the magnitude does not. That is a
+partial reproduction, and it is stated as partial.
+
+## 8a. Best-of-N — where the reported number comes from
+
+**derived** (`scripts/10_ablation_bestofn.py`)
+
+Expected best R² as a function of the sampling budget (bootstrap over the pool):
+
+| set | N=1 | N=8 | N=64 | N=512 |
+|---|---|---|---|---|
+| F1 | −0.36 | 0.34 | 0.56 | 0.68 |
+| F2 | −3.59 | 0.41 | 0.59 | 0.67 |
+| F3 | −0.37 | 0.36 | 0.54 | 0.67 |
+| S1 | −6.20 | −0.06 | 0.55 | 0.71 |
+| S2 | −0.71 | −0.09 | 0.10 | 0.20 |
+| S3 | −0.37 | 0.13 | 0.41 | 0.54 |
+| S4 | −0.49 | 0.02 | 0.28 | 0.35 |
+| S5 | −11.03 | −0.46 | 0.33 | 0.57 |
+
+A single sample from the inverse task is, typically, worse than useless — the
+median candidate has negative R² in 6 of 8 sets. Essentially all of the
+apparent performance is produced by drawing many candidates and keeping the
+best. This is a legitimate design procedure; the point is that the reported
+number is a property of the search budget as much as of the model, and the
+budget is not stated (`docs/discrepancies.md` D3).
+
+## 8b. Why our maximum is lower — one hypothesis tested and rejected
+
+**measured** (`scripts/10b_scoring_stochasticity.py`)
+
+The notebook scores candidates with a *sampled* forward pass, so its R² values
+are themselves noisy, and a maximum over noisy scores is inflated. We decode
+greedily (A5). Could that alone explain the gap?
+
+Re-scoring the *same* candidate sequences with the notebook's sampled decoder:
+
+| set | max, greedy | max, sampled | inflation | gap to paper remaining |
+|---|---|---|---|---|
+| S1 | 0.7120 | 0.7379 | +0.026 | 0.152 |
+| F1 | 0.7221 | 0.7221 | 0.000 | 0.154 |
+| S4 | 0.3487 | 0.3487 | 0.000 | 0.436 |
+| S2 | 0.2234 | 0.2234 | 0.000 | 0.341 |
+
+Mean inflation **+0.0065**; scores identical on 97–99% of candidates. **The
+hypothesis is rejected** — our decoding choice is not responsible for the
+shortfall.
+
+What remains as candidate explanations, none of which we can distinguish from
+the information available: a larger effective candidate pool in the original
+run, different generation seeds, or additional selection steps not described in
+the paper or the notebook. We record the gap as unexplained rather than
+attributing it.
+
+## 8c. Most generations are verbatim training sequences
+
+**measured** (`scripts/07_novelty_audit.py`)
+
+| set | parsed | verbatim copies | copy rate | novel |
+|---|---|---|---|---|
+| F1 | 1946 | 1122 | 57.7% | 824 |
+| F2 | 1961 | 1219 | 62.2% | 742 |
+| F3 | 1949 | 1208 | 62.0% | 741 |
+| S1 | 1953 | 1237 | 63.3% | 716 |
+| S2 | 1948 | 1206 | 61.9% | 742 |
+| S3 | 1955 | 1194 | 61.1% | 761 |
+| S4 | 1958 | 1243 | 63.5% | 715 |
+| S5 | 1974 | 1324 | 67.1% | 650 |
+
+**Overall 62.3%.** A nominal budget of 2,048 yields about 771 scoreable
+candidates. The copies are not concentrated on a few sequences — 200–290
+distinct known sequences are reproduced per set, the most frequent accounting
+for under 6%.
+
+Among sequences that *do* pass the exact-match test, mean best 6-mer
+containment against the reference set is **0.746**. That is compatible with
+novel arrangements of familiar parts, which is what one expects of a repetitive
+protein family; it is not evidence of copying, and it is not percent identity
+(A4).
+
+## 8d. The forward task largely reproduces memorised labels
+
+**measured** (`scripts/04_forward_eval_dataset.py`,
+`scripts/04b_memorisation_audit.py`)
+
+Over the 1,033 fine-tuning pairs (1,026 parsed, 99.3%), in-sample R²:
+
+| property | R², all rows | R², rows whose label was *not* reproduced exactly |
+|---|---|---|
+| toughness | +0.807 | +0.342 |
+| E | +0.578 | −0.596 |
+| strength | +0.721 | +0.007 |
+| strain | +0.681 | −0.204 |
+| **mean (mechanical)** | **+0.696** | **−0.113** |
+
+**732 of 1,026 rows (71.3%)** have all eight values reproduced to within
+0.0005 — that is, the model returns the training label exactly. Mean absolute
+error on those rows is 0.00025; on the remaining 294 rows it is 0.109.
+
+So the aggregate in-sample R² of 0.696 rests mostly on exact label retrieval.
+On rows where retrieval did not occur, the model is worse than predicting the
+dataset mean.
+
+**What this does not show.** The non-memorised rows are selected on the outcome
+and are not a fair held-out sample — their median length is 456 against 361 for
+the memorised rows, so they differ systematically. Their R² is a diagnostic,
+not a generalisation estimate. Obtaining one would require retraining with a
+held-out fold, which this project does not do.
+
+**What it is not.** This contradicts no claim in the paper. The paper fine-tunes
+on all known pairs, states so, reports self-consistency rather than held-out
+accuracy, and does not claim otherwise. It does change how the forward task's
+apparent accuracy should be read.
+
+## 8e. Extension — out-of-distribution spidroins
+
+**measured** (`scripts/13_extension_nonmasp.py`, ~60 sequences per family)
+
+| family | in training distribution | mean R² (mechanical) | mean abs error |
+|---|---|---|---|
+| MaSp | **yes** | **+0.826** | 0.024 |
+| MiSp | no | −0.270 | 0.141 |
+| AcSp | no | −0.317 | 0.170 |
+| AgSp | no | −0.430 | 0.158 |
+| CySp | no | −0.472 | 0.151 |
+| Flag | no | −0.514 | 0.161 |
+| PySp | no | −0.540 | 0.152 |
+
+Accuracy falls off a cliff outside MaSp — from +0.83 to between −0.27 and
+−0.54, with error rising six-fold.
+
+And the predictions barely move with family at all: the between-family spread
+of the mean prediction is **0.019** against a within-family spread of **0.117**,
+a ratio of **0.162**. Given a spidroin it has not memorised, the model emits
+something close to its training marginal regardless of which silk family the
+sequence came from.
+
+*Caveat, stated before the numbers are used:* Silkome's mechanical properties
+are measured on dragline fibre, which is MaSp. Non-MaSp sequences here are
+paired with the same individual's dragline properties, not with their own silk
+type's. So this is not a test of whether the model can predict flagelliform
+silk — no analysis of this dataset could be. The between/within ratio needs no
+such caveat.
+
+## 8f. Composition differences between high- and low-performing silks
+
+**measured** (`scripts/14_composition_association.py`)
+
+A model-free companion to the ablations, following Supplementary Note 8 of
+Pandey, Chen & Keten (*Commun. Mater.* 2024) — **not** Figure 7 of Lu et al.,
+which is a different analysis (see §9).
+
+Ranking the 175 MaSp1-bearing individuals by each mechanical property and
+comparing top-10 against bottom-10 composition, then normalising within
+residue group:
+
+| | residues selected in ≥2 properties |
+|---|---|
+| scheme A (Lehninger-style) | A D E G H I K L M N Q R S T V Y |
+| scheme B (alternative) | A D E F G I K L M N Q R S T V |
+| **agreed by both** | **A D E G I K L M N Q R S T V** |
+| Pandey/Chen/Keten reported | D E F I K L N P Q R S T V Y |
+
+Both schemes recover **12 of their 14** residues. The two schemes disagree only
+on H, Y and F — precisely the residues whose classification is contested.
+
+The grouping matters because the normalisation is within-group, and **the source
+does not specify it** (assumption A15). We report both schemes rather than
+choosing the one that agrees better.
 
 ## 9. Not reproduced
 

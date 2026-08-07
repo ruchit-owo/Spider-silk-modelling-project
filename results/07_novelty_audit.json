@@ -1,0 +1,189 @@
+{
+  "manifest": {
+    "script": "scripts/07_novelty_audit.py",
+    "timestamp_utc": "2026-08-07T18:09:06+00:00",
+    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "git_dirty": true,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "sample": 40,
+      "seed": 20260807
+    }
+  },
+  "result": {
+    "per_set": [
+      {
+        "set": "F1",
+        "n_parsed": 1946,
+        "n_verbatim_copies": 1122,
+        "copy_rate": 0.5765673175745119,
+        "n_novel": 824,
+        "n_distinct_copied_sequences": 210,
+        "most_repeated_copy_share": 0.05525846702317291,
+        "n_distinct_novel": 708
+      },
+      {
+        "set": "F2",
+        "n_parsed": 1961,
+        "n_verbatim_copies": 1219,
+        "copy_rate": 0.6216216216216216,
+        "n_novel": 742,
+        "n_distinct_copied_sequences": 288,
+        "most_repeated_copy_share": 0.02543068088597211,
+        "n_distinct_novel": 649
+      },
+      {
+        "set": "F3",
+        "n_parsed": 1949,
+        "n_verbatim_copies": 1208,
+        "copy_rate": 0.6198050282195998,
+        "n_novel": 741,
+        "n_distinct_copied_sequences": 232,
+        "most_repeated_copy_share": 0.04718543046357616,
+        "n_distinct_novel": 647
+      },
+      {
+        "set": "S1",
+        "n_parsed": 1953,
+        "n_verbatim_copies": 1237,
+        "copy_rate": 0.6333845366103431,
+        "n_novel": 716,
+        "n_distinct_copied_sequences": 234,
+        "most_repeated_copy_share": 0.037186742118027485,
+        "n_distinct_novel": 647
+      },
+      {
+        "set": "S2",
+        "n_parsed": 1948,
+        "n_verbatim_copies": 1206,
+        "copy_rate": 0.6190965092402464,
+        "n_novel": 742,
+        "n_distinct_copied_sequences": 225,
+        "most_repeated_copy_share": 0.0439469320066335,
+        "n_distinct_novel": 662
+      },
+      {
+        "set": "S3",
+        "n_parsed": 1955,
+        "n_verbatim_copies": 1194,
+        "copy_rate": 0.6107416879795396,
+        "n_novel": 761,
+        "n_distinct_copied_sequences": 242,
+        "most_repeated_copy_share": 0.025963149078726967,
+        "n_distinct_novel": 689
+      },
+      {
+        "set": "S4",
+        "n_parsed": 1958,
+        "n_verbatim_copies": 1243,
+        "copy_rate": 0.6348314606741573,
+        "n_novel": 715,
+        "n_distinct_copied_sequences": 255,
+        "most_repeated_copy_share": 0.03378921962992759,
+        "n_distinct_novel": 639
+      },
+      {
+        "set": "S5",
+        "n_parsed": 1974,
+        "n_verbatim_copies": 1324,
+        "copy_rate": 0.6707193515704154,
+        "n_novel": 650,
+        "n_distinct_copied_sequences": 198,
+        "most_repeated_copy_share": 0.04758308157099698,
+        "n_distinct_novel": 570
+      }
+    ],
+    "overall_copy_rate": 0.6234339043722833,
+    "kmer_summary": [
+      {
+        "set": "F1",
+        "max_containment_k6_mean": 0.759,
+        "max_containment_k6_median": 0.898,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.686,
+        "max_jaccard_k6_median": 0.797,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "F2",
+        "max_containment_k6_mean": 0.794,
+        "max_containment_k6_median": 0.903,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.733,
+        "max_jaccard_k6_median": 0.869,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "F3",
+        "max_containment_k6_mean": 0.724,
+        "max_containment_k6_median": 0.84,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.655,
+        "max_jaccard_k6_median": 0.812,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "S1",
+        "max_containment_k6_mean": 0.779,
+        "max_containment_k6_median": 0.875,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.713,
+        "max_jaccard_k6_median": 0.804,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "S2",
+        "max_containment_k6_mean": 0.675,
+        "max_containment_k6_median": 0.809,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.61,
+        "max_jaccard_k6_median": 0.665,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "S3",
+        "max_containment_k6_mean": 0.737,
+        "max_containment_k6_median": 0.89,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.673,
+        "max_jaccard_k6_median": 0.794,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "S4",
+        "max_containment_k6_mean": 0.738,
+        "max_containment_k6_median": 0.871,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.663,
+        "max_jaccard_k6_median": 0.76,
+        "max_jaccard_k6_max": 1.0
+      },
+      {
+        "set": "S5",
+        "max_containment_k6_mean": 0.76,
+        "max_containment_k6_median": 0.823,
+        "max_containment_k6_max": 1.0,
+        "max_jaccard_k6_mean": 0.685,
+        "max_jaccard_k6_median": 0.752,
+        "max_jaccard_k6_max": 1.0
+      }
+    ],
+    "kmer_note": "6-mer containment/Jaccard against ALL_SILK_SEQ; offline stand-in for BLAST, not an alignment statistic (A4)"
+  }
+}

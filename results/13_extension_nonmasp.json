@@ -1,0 +1,170 @@
+{
+  "manifest": {
+    "script": "scripts/13_extension_nonmasp.py",
+    "timestamp_utc": "2026-08-07T19:03:01+00:00",
+    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "git_dirty": true,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "versions": {
+      "python": "3.13.5",
+      "torch": "2.13.0+cu126",
+      "transformers": "5.14.1",
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "sklearn": "1.9.0",
+      "Bio": "1.88",
+      "matplotlib": "3.11.1"
+    },
+    "gpu": {
+      "cuda": true,
+      "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+      "total_memory_gb": 6.44,
+      "torch_cuda": "12.6"
+    },
+    "params": {
+      "per_family": 60,
+      "seed": 20260807
+    }
+  },
+  "result": {
+    "n_evaluated": 413,
+    "family_counts": {
+      "MaSp": 1033,
+      "AgSp": 524,
+      "AcSp": 430,
+      "MiSp": 410,
+      "Flag": 341,
+      "other": 314,
+      "PySp": 256,
+      "CySp": 243,
+      "CrSp": 12
+    },
+    "mean_prediction_by_family": [
+      {
+        "family": "AcSp",
+        "n": 60,
+        "toughness": 0.3108666666666667,
+        "E": 0.2647166666666667,
+        "strength": 0.33893333333333325,
+        "strain": 0.27738333333333337,
+        "within_family_sd": 0.12458905699287384
+      },
+      {
+        "family": "AgSp",
+        "n": 57,
+        "toughness": 0.3002105263157894,
+        "E": 0.25301754385964914,
+        "strength": 0.3227719298245614,
+        "strain": 0.27573684210526317,
+        "within_family_sd": 0.11668222570390428
+      },
+      {
+        "family": "CySp",
+        "n": 58,
+        "toughness": 0.3021206896551724,
+        "E": 0.20862068965517244,
+        "strength": 0.322,
+        "strain": 0.31027586206896557,
+        "within_family_sd": 0.10728464120559358
+      },
+      {
+        "family": "Flag",
+        "n": 59,
+        "toughness": 0.27540677966101695,
+        "E": 0.25789830508474576,
+        "strength": 0.300864406779661,
+        "strain": 0.2616271186440678,
+        "within_family_sd": 0.11724902574327987
+      },
+      {
+        "family": "MaSp",
+        "n": 60,
+        "toughness": 0.2866333333333334,
+        "E": 0.22679999999999997,
+        "strength": 0.28653333333333336,
+        "strain": 0.3251499999999999,
+        "within_family_sd": 0.14489527298776583
+      },
+      {
+        "family": "MiSp",
+        "n": 60,
+        "toughness": 0.26921666666666666,
+        "E": 0.2342,
+        "strength": 0.3095333333333333,
+        "strain": 0.27925000000000005,
+        "within_family_sd": 0.10770321979596277
+      },
+      {
+        "family": "PySp",
+        "n": 59,
+        "toughness": 0.31457627118644066,
+        "E": 0.2728305084745763,
+        "strength": 0.33618644067796605,
+        "strain": 0.30064406779661024,
+        "within_family_sd": 0.09961743320772376
+      }
+    ],
+    "between_family_sd": 0.01894833963498884,
+    "within_family_sd": 0.11686012509101484,
+    "between_over_within": 0.1621454676711256,
+    "accuracy_by_family": [
+      {
+        "family": "MaSp",
+        "n": 60,
+        "in_training_distribution": true,
+        "mean_r2_mechanical": 0.8261463269602853,
+        "mean_r2_all8": 0.736897404416089,
+        "mean_abs_error": 0.023895613948785907
+      },
+      {
+        "family": "MiSp",
+        "n": 60,
+        "in_training_distribution": false,
+        "mean_r2_mechanical": -0.2696930317534393,
+        "mean_r2_all8": -0.38406115002130514,
+        "mean_abs_error": 0.1408520025322952
+      },
+      {
+        "family": "AcSp",
+        "n": 60,
+        "in_training_distribution": false,
+        "mean_r2_mechanical": -0.31710645102978563,
+        "mean_r2_all8": -0.6835653465749946,
+        "mean_abs_error": 0.16971438557445062
+      },
+      {
+        "family": "AgSp",
+        "n": 57,
+        "in_training_distribution": false,
+        "mean_r2_mechanical": -0.4300292370307269,
+        "mean_r2_all8": -0.5888686006081296,
+        "mean_abs_error": 0.1582725970626044
+      },
+      {
+        "family": "CySp",
+        "n": 58,
+        "in_training_distribution": false,
+        "mean_r2_mechanical": -0.4716646421815417,
+        "mean_r2_all8": -0.5471528278068136,
+        "mean_abs_error": 0.1512874360571944
+      },
+      {
+        "family": "Flag",
+        "n": 59,
+        "in_training_distribution": false,
+        "mean_r2_mechanical": -0.5140024264266614,
+        "mean_r2_all8": -0.6756565675622244,
+        "mean_abs_error": 0.16086980858697666
+      },
+      {
+        "family": "PySp",
+        "n": 59,
+        "in_training_distribution": false,
+        "mean_r2_mechanical": -0.5398508983485888,
+        "mean_r2_all8": -0.4627741954583013,
+        "mean_abs_error": 0.15221542510808236
+      }
+    ],
+    "caveat": "Silkome mechanical properties are measured on dragline fibre, which is MaSp. Non-MaSp sequences are paired with the same individual's dragline properties, not with their own silk type's properties."
+  }
+}
