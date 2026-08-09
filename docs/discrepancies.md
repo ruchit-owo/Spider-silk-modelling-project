@@ -158,25 +158,106 @@ outputs. It does mean the effective sampling budget is smaller than the nominal
 one, and it is worth knowing when reading the novelty argument in Section 2.2:
 the model's default behaviour includes a good deal of retrieval.
 
-## D7 — Supporting Information not available to this reproduction
+## D7 — Supporting Information: initially unavailable, later located
 
-**Status: unresolved.**
+**Status: resolved.**
 
-We were not able to obtain the paper's Supporting Information. The PDF supplied
-as SI turned out to be the supplementary file for a different paper (Pandey,
-Chen & Keten, *Commun. Mater.* 2024). What this blocks:
+The Wiley Supporting Information could not be retrieved (the publisher returns
+402/403 to automated requests), and a PDF initially supplied as the SI turned
+out to be the supplementary file for a different paper (Pandey, Chen & Keten,
+*Commun. Mater.* 2024; see D12).
 
-| SI item | contents | consequence |
+The supplementary tables were subsequently located in the **arXiv preprint of
+the same work**, [arXiv:2309.10170](https://arxiv.org/abs/2309.10170), which
+carries them as appended pages: Table S1 on p. 31, S2 on p. 35, S3 on p. 36,
+S4 on p. 37, S5 on p. 38.
+
+| SI item | contents | status now |
 |---|---|---|
-| Table S1 | the five published generated sequences and ten BLAST neighbours | cannot compare our generations against the published ones directly |
-| Table S2 | BLAST query cover and percent identity | the novelty analysis of Section 2.2 cannot be reproduced; we substitute offline k-mer measures, clearly labelled |
-| Table S3 | ProtParam values and pLDDT scores | Figure 5 is reproduced on our own generations, not against the published ones |
-| Table S4 | the motif definitions | **Figure 7 cannot be reproduced.** We fall back to canonical spidroin motifs, labelled `canonical_fallback`, which is a different analysis |
-| Table S5 | normalisation constants | **recovered independently and verified** - see assumption A2. Not blocking. |
+| Table S1 | the five published generated sequences and ten BLAST neighbours | **available**, not yet incorporated; would let Figures 5 and 7 be compared against the paper's own specimens rather than nearest database neighbours |
+| Table S2 | BLAST query cover and percent identity | **available**, not yet incorporated |
+| Table S3 | ProtParam values and pLDDT scores | **available**, not yet incorporated |
+| Table S4 | the motif definitions | **obtained and in use.** `data/raw/table_s4_motifs.csv`; `scripts/06_motif_analysis.py` now reports `motif_source = table_s4`, so Figure 7 is a genuine reproduction |
+| Table S5 | normalisation constants | **obtained, and it confirms our independent recovery exactly** on all eight properties - see A2 and D14 |
 
-Of these, only Table S4 blocks a headline figure. If it becomes available, drop
-it in `data/raw/table_s4_motifs.csv` and `scripts/05_motif_analysis.py`
-switches from fallback to reproduction with no other change.
+Table S4 as transcribed (14 motifs):
+
+| ID | motif | property | effect |
+|---|---|---|---|
+| T_pos_1 | GYGQGG | toughness | + |
+| T_pos_2 | GGGQ | toughness | + |
+| T_neg_1 | SQGP | toughness | − |
+| T_neg_2 | SY | toughness | − |
+| T_neg_3 | SV | toughness | − |
+| TS_pos_1 | GYGQGG | tensile strength | + |
+| TS_pos_2 | QGGS | tensile strength | + |
+| TS_neg_1 | PQ | tensile strength | − |
+| SB_pos_1 | GYGQGG | strain at break | + |
+| SB_pos_2 | QGP | strain at break | + |
+| SB_pos_3 | PGA | strain at break | + |
+| E_pos_1 | PA | elastic modulus | + |
+| E_pos_2 | GQ | elastic modulus | + |
+| E_neg_1 | GGQ | elastic modulus | − |
+
+## D13 — Three motifs carry the opposite sign to their cited source
+
+**Status: confirmed, with the caveat below.**
+
+Table S4 states that its motifs "are selected and concluded from Table 1" of
+the Silkome paper (Arakawa et al., *Sci. Adv.* 2022). Comparing the two, three
+entries carry the opposite sign to what that table lists:
+
+| motif | Table S4 | Silkome Table 1 |
+|---|---|---|
+| GQ (`E_pos_2`) | positive for elastic modulus | "MaSp1-GQ" under **negative** effects for Young's modulus |
+| QGP (`SB_pos_2`) | positive for strain at break | "QGP ... in MaSp1" under **negative** effects for strain at break |
+| PGA (`SB_pos_3`) | positive for strain at break | "PGA in MaSp1" under **negative** effects for strain at break |
+
+This matters for one of the paper's stated conclusions. Section 2.5 reports
+that "sequences with elevated E values, particularly set 4, exhibit an
+increased count of the `E_pos_2` motif", and `E_pos_2` is GQ — which the cited
+source associates with *lower* modulus. Read against Silkome Table 1, an
+increased GQ count in a high-modulus design would be the opposite of the
+expected direction.
+
+Two possibilities we cannot distinguish, and we do not assume either: the signs
+are transcription slips, or the authors re-derived the associations from the
+underlying data and the re-derivation is not described. A short communication
+condensing a ten-property table down to four properties and fourteen motifs has
+plenty of room for either.
+
+**Caveat on our own evidence.** We read Silkome Table 1 through automated
+retrieval of the PMC version of the paper, twice, via different routes. The two
+retrievals agreed on GQ, QGP and PGA — the three above — but disagreed on the
+sign of GGQ for Young's modulus, so we make no claim about GGQ. Anyone acting
+on this entry should read Silkome Table 1 directly.
+
+## D14 — Recovered normalisation constants match the published Table S5 exactly
+
+**Status: confirmed.**
+
+Before the Supporting Information was located, the Table S5 normalisation
+constants were recovered from the Silkome data and verified against a single
+published worked example (assumption A2). Table S5 has since been obtained from
+the arXiv preprint, and it matches our recovered values on all eight
+properties:
+
+| property | unit | Table S5 | ours |
+|---|---|---|---|
+| toughness | GJ/m³ | 0.005 – 0.39 | 0.005 – 0.39 |
+| SD toughness | GJ/m³ | 0.001 – 0.136 | 0.001 – 0.136 |
+| E | GPa | 0.38 – 37.0 | 0.38 – 37.0 |
+| SD E | GPa | 0.03 – 9.76 | 0.03 – 9.76 |
+| strength | GPa | 0.17 – 3.33 | 0.17 – 3.33 |
+| SD strength | GPa | 0.01 – 0.8 | 0.01 – 0.8 |
+| strain | % | 5.1 – 53.2 | 5.1 – 53.2 |
+| SD strain | % | 0.1 – 13.7 | 0.1 – 13.7 |
+
+This also confirms assumption A1, the dataset reconstruction rule: the
+constants are a property of the population they were computed over, and
+recovering them exactly means we assembled the same population the authors did.
+
+The units, which we did not have before, are recorded here for reference.
 
 ## D8 — The worked example sequence, as printed, differs from the Silkome record
 

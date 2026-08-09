@@ -118,8 +118,16 @@ def nearest_neighbours(
     q = _kmers(sequence, k)
     if not q:
         return []
+    # The reference set contains duplicate sequences (the same protein recovered
+    # from several individuals). Without de-duplication the "two neighbours"
+    # can be the same sequence twice, which silently turns a comparison against
+    # two natural specimens into a comparison against one.
     scored: list[tuple[float, str]] = []
+    seen: set[str] = set()
     for ref in known:
+        if ref in seen or ref == sequence:
+            continue
+        seen.add(ref)
         r = _kmers(ref, k)
         if not r:
             continue

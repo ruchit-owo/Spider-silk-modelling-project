@@ -1,8 +1,8 @@
 {
   "manifest": {
     "script": "scripts/05_protein_properties.py",
-    "timestamp_utc": "2026-08-07T19:04:48+00:00",
-    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "timestamp_utc": "2026-08-09T14:57:55+00:00",
+    "git_commit": "62079d5088351e1544e1441d08c4e8706d112a7d",
     "git_dirty": true,
     "platform": "Windows-11-10.0.26200-SP0",
     "versions": {
@@ -106,39 +106,39 @@
         "set": "S1",
         "role": "neighbour2",
         "name": "S1_nb2",
-        "length": 368,
-        "molecular_weight": 32044.604300000003,
-        "instability_index": 33.13614130434782,
-        "isoelectric_point": 5.428714942932127,
-        "gravy": -0.28070652173913047,
-        "aromaticity": 0.04619565217391305,
-        "frac_helix_legacy": 0.12771739130434784,
-        "frac_turn_legacy": 0.5760869565217391,
-        "frac_sheet_legacy": 0.21739130434782608,
-        "frac_helix_corrected": 0.21739130434782608,
-        "frac_turn_corrected": 0.5842391304347826,
-        "frac_sheet_corrected": 0.1331521739130435,
-        "pct_A": 17.66304347826087,
-        "pct_C": 0.2717391304347826,
-        "pct_D": 0.8152173913043478,
-        "pct_E": 0.2717391304347826,
+        "length": 621,
+        "molecular_weight": 53359.350099999996,
+        "instability_index": 30.009983896940405,
+        "isoelectric_point": 6.6541635513305675,
+        "gravy": -0.43285024154589374,
+        "aromaticity": 0.046698872785829314,
+        "frac_helix_legacy": 0.0966183574879227,
+        "frac_turn_legacy": 0.5748792270531401,
+        "frac_sheet_legacy": 0.21256038647342995,
+        "frac_helix_corrected": 0.21256038647342995,
+        "frac_turn_corrected": 0.5797101449275363,
+        "frac_sheet_corrected": 0.10305958132045089,
+        "pct_A": 18.84057971014493,
+        "pct_C": 0.1610305958132045,
+        "pct_D": 0.4830917874396135,
+        "pct_E": 0.1610305958132045,
         "pct_F": 0.0,
-        "pct_G": 29.076086956521742,
-        "pct_H": 0.2717391304347826,
-        "pct_I": 0.5434782608695652,
+        "pct_G": 32.689210950080515,
+        "pct_H": 0.322061191626409,
+        "pct_I": 0.4830917874396135,
         "pct_K": 0.0,
-        "pct_L": 3.804347826086957,
+        "pct_L": 2.254428341384863,
         "pct_M": 0.0,
-        "pct_N": 0.8152173913043478,
-        "pct_P": 13.31521739130435,
-        "pct_Q": 8.967391304347826,
-        "pct_R": 0.8152173913043478,
-        "pct_S": 14.402173913043478,
-        "pct_T": 0.5434782608695652,
-        "pct_V": 3.804347826086957,
+        "pct_N": 0.4830917874396135,
+        "pct_P": 12.88244766505636,
+        "pct_Q": 11.594202898550725,
+        "pct_R": 0.644122383252818,
+        "pct_S": 11.43317230273752,
+        "pct_T": 0.644122383252818,
+        "pct_V": 2.254428341384863,
         "pct_W": 0.0,
-        "pct_Y": 4.619565217391304,
-        "kmer_containment_to_generated": 0.6145833333333334
+        "pct_Y": 4.669887278582931,
+        "kmer_containment_to_generated": 0.5833333333333334
       },
       {
         "set": "S2",
@@ -607,8 +607,8 @@
       {
         "set": "S1",
         "neighbour": 2,
-        "containment": 0.6145833333333334,
-        "length": 368
+        "containment": 0.5833333333333334,
+        "length": 621
       },
       {
         "set": "S2",
@@ -664,36 +664,36 @@
         "set": "S1",
         "descriptor": "molecular_weight",
         "generated": 45464.9989,
-        "neighbour_mean": 32044.604300000003,
-        "relative_gap": 0.41880356750106584
+        "neighbour_mean": 42701.9772,
+        "relative_gap": 0.0647047720310243
       },
       {
         "set": "S1",
         "descriptor": "instability_index",
         "generated": 30.282075471698114,
-        "neighbour_mean": 33.13614130434782,
-        "relative_gap": -0.08613150838644022
+        "neighbour_mean": 31.57306260064411,
+        "relative_gap": -0.04088887876590279
       },
       {
         "set": "S1",
         "descriptor": "isoelectric_point",
         "generated": 5.264507102966308,
-        "neighbour_mean": 5.428714942932127,
-        "relative_gap": -0.030248012962921914
+        "neighbour_mean": 6.041439247131347,
+        "relative_gap": -0.1286005060025968
       },
       {
         "set": "S1",
         "descriptor": "frac_helix_legacy",
         "generated": 0.10566037735849057,
-        "neighbour_mean": 0.12771739130434784,
-        "relative_gap": -0.17270172621437177
+        "neighbour_mean": 0.11216787439613526,
+        "relative_gap": -0.05801569364382026
       },
       {
         "set": "S1",
         "descriptor": "frac_sheet_legacy",
         "generated": 0.14150943396226415,
-        "neighbour_mean": 0.21739130434782608,
-        "relative_gap": -0.3490566037735849
+        "neighbour_mean": 0.21497584541062803,
+        "relative_gap": -0.34174263302946795
       },
       {
         "set": "S2",

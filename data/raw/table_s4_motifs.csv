@@ -1,0 +1,15 @@
+motif_id,pattern,property,direction
+T_pos_1,GYGQGG,toughness,pos
+T_pos_2,GGGQ,toughness,pos
+T_neg_1,SQGP,toughness,neg
+T_neg_2,SY,toughness,neg
+T_neg_3,SV,toughness,neg
+TS_pos_1,GYGQGG,strength,pos
+TS_pos_2,QGGS,strength,pos
+TS_neg_1,PQ,strength,neg
+SB_pos_1,GYGQGG,strain,pos
+SB_pos_2,QGP,strain,pos
+SB_pos_3,PGA,strain,pos
+E_pos_1,PA,E,pos
+E_pos_2,GQ,E,pos
+E_neg_1,GGQ,E,neg

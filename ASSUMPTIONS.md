@@ -149,18 +149,19 @@ though the boundary is coarse. Conclusions are correspondingly coarse: this
 ablation can say "the model reads the terminal region more than the core" or
 the reverse, not where the domain ends.
 
-## A8 — Motif set when Table S4 is unavailable
+## A8 — Motif set (superseded: Table S4 was located)
 
-**We could not obtain the Supporting Information.** Figure 7's motifs come
-from Table S4, itself derived from Table 1 of the Silkome paper.
+**No longer an assumption.** Table S4 was initially unavailable and the motif
+analysis fell back to canonical spidroin motifs. The table has since been
+obtained from the arXiv preprint of the same paper
+([arXiv:2309.10170](https://arxiv.org/abs/2309.10170), p. 37) and transcribed
+to `data/raw/table_s4_motifs.csv`. `scripts/06_motif_analysis.py` now reports
+`motif_source = table_s4` and Figure 7 is a genuine reproduction.
 
-**Assumed.** If `data/raw/table_s4_motifs.csv` is absent, the motif analysis
-falls back to canonical spidroin motifs (poly-A, GGX, GPGXX, GA, QQ) and every
-output is labelled `motif_source = canonical_fallback`.
-
-**This is not a reproduction of Figure 7** and is never described as one. The
-fallback exists so the ablation work, which only needs motifs that are real
-and frequent, can proceed.
+The fallback path remains in the code for anyone running without the file, and
+still labels its output `canonical_fallback`. See `docs/discrepancies.md` D7
+for the transcribed table and D13 for a sign discrepancy between three of its
+entries and the source it cites.
 
 ## A9 — Sampling budget N
 
