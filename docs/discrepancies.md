@@ -177,7 +177,7 @@ S4 on p. 37, S5 on p. 38.
 | Table S1 | the five published generated sequences and ten BLAST neighbours | **available**, not yet incorporated; would let Figures 5 and 7 be compared against the paper's own specimens rather than nearest database neighbours |
 | Table S2 | BLAST query cover and percent identity | **available**, not yet incorporated |
 | Table S3 | ProtParam values and pLDDT scores | **available**, not yet incorporated |
-| Table S4 | the motif definitions | **obtained and in use.** `data/raw/table_s4_motifs.csv`; `scripts/06_motif_analysis.py` now reports `motif_source = table_s4`, so Figure 7 is a genuine reproduction |
+| Table S4 | the motif definitions | **obtained and in use.** `data/raw/table_s4_motifs.csv`; `scripts/06_motif_analysis.py` now reports `motif_source = table_s4`, so Figure 7 is a genuine reproduction. All 14 entries verified against the Silkome Table 1 they derive from (D13) |
 | Table S5 | normalisation constants | **obtained, and it confirms our independent recovery exactly** on all eight properties - see A2 and D14 |
 
 Table S4 as transcribed (14 motifs):
@@ -199,38 +199,43 @@ Table S4 as transcribed (14 motifs):
 | E_pos_2 | GQ | elastic modulus | + |
 | E_neg_1 | GGQ | elastic modulus | − |
 
-## D13 — Three motifs carry the opposite sign to their cited source
+## D13 — WITHDRAWN. Table S4 matches its cited source on all 14 entries
 
-**Status: confirmed, with the caveat below.**
+**Status: withdrawn. There is no discrepancy.**
 
-Table S4 states that its motifs "are selected and concluded from Table 1" of
-the Silkome paper (Arakawa et al., *Sci. Adv.* 2022). Comparing the two, three
-entries carry the opposite sign to what that table lists:
+An earlier version of this entry reported that three motifs — GQ (`E_pos_2`),
+QGP (`SB_pos_2`) and PGA (`SB_pos_3`) — carried the opposite sign in Table S4
+to the Silkome Table 1 it cites. **That claim was wrong and is retracted.**
 
-| motif | Table S4 | Silkome Table 1 |
-|---|---|---|
-| GQ (`E_pos_2`) | positive for elastic modulus | "MaSp1-GQ" under **negative** effects for Young's modulus |
-| QGP (`SB_pos_2`) | positive for strain at break | "QGP ... in MaSp1" under **negative** effects for strain at break |
-| PGA (`SB_pos_3`) | positive for strain at break | "PGA in MaSp1" under **negative** effects for strain at break |
+Checked against the published table read directly from the *Science Advances*
+PDF, Silkome Table 1 lists:
 
-This matters for one of the paper's stated conclusions. Section 2.5 reports
-that "sequences with elevated E values, particularly set 4, exhibit an
-increased count of the `E_pos_2` motif", and `E_pos_2` is GQ — which the cited
-source associates with *lower* modulus. Read against Silkome Table 1, an
-increased GQ count in a high-modulus design would be the opposite of the
-expected direction.
+- **Strain at break, positive effect:** MaSp1-GYGQGG; **QGP, PGA in MaSp1**
+- **Young's modulus, positive effect:** PA in MaSp2; GL in MaSp1 and MaSp2;
+  **MaSp1-GQ**
+- **Young's modulus, negative effect:** Q in MaSp2; **MaSp1-GGQ**
 
-Two possibilities we cannot distinguish, and we do not assume either: the signs
-are transcription slips, or the authors re-derived the associations from the
-underlying data and the re-derivation is not described. A short communication
-condensing a ten-property table down to four properties and fourteen motifs has
-plenty of room for either.
+All fourteen Table S4 entries agree with this. Lu et al.'s transcription is
+faithful.
 
-**Caveat on our own evidence.** We read Silkome Table 1 through automated
-retrieval of the PMC version of the paper, twice, via different routes. The two
-retrievals agreed on GQ, QGP and PGA — the three above — but disagreed on the
-sign of GGQ for Young's modulus, so we make no claim about GGQ. Anyone acting
-on this entry should read Silkome Table 1 directly.
+**Where the error came from, since it is instructive.** The withdrawn claim
+rested on two automated retrievals of the PMC version of the Silkome paper.
+Table 1 sits in the left column of a two-column page, and its "positive
+effect" and "negative effect" columns are separated by whitespace rather than
+rules. Linearised text extraction interleaves the two columns and the body
+text, and both retrievals assigned several entries to the wrong column. Reading
+the same table as a rendered image resolves it immediately and unambiguously.
+
+The original entry did flag that it rested on a web fetch rather than a local
+computation, and recommended checking the source directly. Doing so is what
+overturned it. Two lessons kept for the rest of this project: table structure
+in multi-column PDFs must be read visually, not from extracted text; and a
+claim that a published paper contradicts its own source deserves a higher
+evidence bar than a claim about our own measurements, because the cost of
+getting it wrong falls on someone else.
+
+`data/raw/table_s4_motifs.csv` was unaffected — it was transcribed from a
+rendered image of Table S4 from the outset, and needs no correction.
 
 ## D14 — Recovered normalisation constants match the published Table S5 exactly
 
