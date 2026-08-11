@@ -237,6 +237,47 @@ getting it wrong falls on someone else.
 `data/raw/table_s4_motifs.csv` was unaffected — it was transcribed from a
 rendered image of Table S4 from the outset, and needs no correction.
 
+## D15 — Table S1 extraction is INCOMPLETE and its outputs are withdrawn
+
+**Status: open. Do not use `scripts/08_extract_table_s1.py` output.**
+
+Table S1 (arXiv:2309.10170, pp. 31-34) holds the five sequences the paper
+generated and their ten BLAST neighbours. Extracting it would allow Figures 5
+and 7 to be reproduced against the paper's own specimens, and would allow the
+forward task to be checked on a sequence whose expected R2 is published.
+
+The extraction is not correct yet, and the outputs have been deleted rather
+than kept with a caveat.
+
+**What the checks show.** Table S3 publishes both the length and the molecular
+weight of all fifteen sequences. Against those:
+
+- five rows are off by exactly ±63 residues, one text line, so whole lines are
+  being attributed to the adjacent row;
+- of the ten rows whose length *does* match, nine still have the wrong
+  molecular weight. Length can match while composition does not, because every
+  line in the table is the same width, so a line swapped between two adjacent
+  rows leaves both lengths unchanged;
+- exactly one row, 5.3, matches its published MW to the cent (224113.32),
+  which shows the machinery can be exact and the remaining errors are in row
+  attribution rather than in glyph reading.
+
+Three fixes were tried and none resolved it: reading raw `page.chars` instead
+of `extract_words` (identical output, so glyphs are being read faithfully);
+tightening the band boundaries to half-open with no tolerance; and changing
+whether a page's leading band belongs to the row above or below.
+
+**Why this is recorded rather than quietly retried.** An earlier version of
+this work ran the forward task on these sequences and reported R2 values
+against the paper's published ones. Those numbers were computed on unverified
+sequences and are **retracted**. They are not in `RESULTS.md` and no
+conclusion in this project rests on them.
+
+The molecular-weight check is what caught this. Length alone passed ten of
+fifteen rows and would have let corrupted sequences through into a headline
+comparison. Any future attempt on this table should verify against MW, not
+length.
+
 ## D14 — Recovered normalisation constants match the published Table S5 exactly
 
 **Status: confirmed.**
