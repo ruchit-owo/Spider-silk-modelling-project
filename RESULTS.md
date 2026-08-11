@@ -265,6 +265,76 @@ did any of ~700–800 candidates match or exceed the published figure.
 The direction and the mechanism reproduce; the magnitude does not. That is a
 partial reproduction, and it is stated as partial.
 
+## 8g. The forward task reproduces the published R² exactly
+
+**measured** (`scripts/08_extract_table_s1.py`, `scripts/09_verify_published_sequences.py`)
+
+This is the decisive result, and it reframes §8.
+
+Table S1 gives the five sequences the paper actually generated; Table S3 gives
+the property vector its forward task predicted for each, and the resulting R².
+So both the input and the expected output are known, and the forward task can
+be checked with no sampling and no search.
+
+Submitting the paper's own sequences to the released checkpoint:
+
+| set | paper R² | ours | difference | predicted vector vs Table S3 |
+|---|---|---|---|---|
+| S1 | 0.8899 | **0.8899** | +0.0000 | **8/8 slots identical** |
+| S2 | 0.5640 | 0.5176 | −0.0464 | 6/8 identical |
+| S3 | 0.7167 | **0.7167** | −0.0000 | **8/8 identical** |
+| S4 | 0.7843 | **0.7843** | +0.0000 | **8/8 identical** |
+| S5 | 0.7751 | **0.7751** | +0.0000 | **8/8 identical** |
+
+Four of the five reproduce to four decimal places, and not merely in R² — the
+entire eight-value predicted vector is identical to the published one, slot for
+slot. S2 matches on its first six slots and differs on the last two
+(strain 0.245 vs 0.247, strain SD 0.151 vs 0.257), which is consistent with the
+paper's sampled forward decoding differing from our greedy decoding on a
+low-confidence tail.
+
+**What this settles.** The forward task reproduces exactly. Therefore the
+shortfall reported in §8 — where our maximum fell below the published value on
+all eight sets — is **entirely attributable to the inverse task's search**, not
+to the scorer, the checkpoint, the prompt format, or our decoding choice. Our
+2,048 candidates simply did not include sequences as good as the ones the
+authors found. Their generated sequences are also markedly longer than ours
+(1096, 926, 312, 869, 521 residues against our 530, 493, 471, 185, 256), so the
+two searches explored different regions.
+
+This is a stronger reproduction result than §8 alone suggested, and it should
+be read as correcting the impression that section gives on its own.
+
+**One observation in passing.** Across the five published sequences the forward
+task returns only three distinct vectors: S1 and S5 both begin
+[0.278, 0.274, 0.182, …] and S2 and S4 both begin [0.745, 0.141, 0.511, …].
+Five different sequences, three distinct answers. That is consistent with the
+retrieval behaviour documented in §8d.
+
+## 8h. Figure 7 against the paper's own specimens
+
+**measured** (`scripts/09_verify_published_sequences.py`, Table S4 motif set)
+
+Motif-density profile correlation, each generated sequence against its own two
+BLAST neighbours from Table S1:
+
+| set | Pearson r | paper's characterisation |
+|---|---|---|
+| S1 | 0.658 | "particularly evident" |
+| S2 | **0.448** | "congruence is diminished in set 2" |
+| S3 | **0.941** | "particularly evident" |
+| S4 | **0.944** | "particularly evident" |
+| S5 | 0.660 | — |
+
+This supports the paper's qualitative claim. Set 2 is the weakest by a clear
+margin, exactly as the paper reports, and sets 3 and 4 are the strongest. Set 1,
+which the paper groups with 3 and 4, comes out middling here rather than high.
+
+Note that our earlier run using nearest database neighbours as substitutes gave
+a different and misleading picture (S2 at 0.99, S4 at −0.02). Using the paper's
+actual comparison sequences changes the answer, which is worth remembering
+whenever a substitute specimen stands in for a published one.
+
 ## 8a. Best-of-N — where the reported number comes from
 
 **derived** (`scripts/10_ablation_bestofn.py`)

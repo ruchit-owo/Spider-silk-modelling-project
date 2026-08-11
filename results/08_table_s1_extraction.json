@@ -1,8 +1,8 @@
 {
   "manifest": {
     "script": "scripts/08_extract_table_s1.py",
-    "timestamp_utc": "2026-08-11T06:36:51+00:00",
-    "git_commit": "7e79f8e4340a41834f32f5576fea660ae10cc0fa",
+    "timestamp_utc": "2026-08-11T11:53:25+00:00",
+    "git_commit": "762aefadd06e99232a65353ae8e7da8e56439120",
     "git_dirty": true,
     "platform": "Windows-11-10.0.26200-SP0",
     "versions": {
@@ -33,112 +33,147 @@
       33,
       34
     ],
-    "n_sequences": 15,
+    "row_order": [
+      "1.1",
+      "2.1",
+      "3.1",
+      "4.1",
+      "5.1",
+      "1.2",
+      "2.2",
+      "3.2",
+      "4.2",
+      "5.2",
+      "1.3",
+      "2.3",
+      "3.3",
+      "4.3",
+      "5.3"
+    ],
+    "total_residues": 18844,
+    "n_mw_verified": 13,
+    "n_mw_checkable": 13,
+    "method": "sequence lines read from page.chars in document order, filtered to residue-only lines, concatenated, and split at the Table S3 published lengths; verified against the Table S3 published molecular weights, which are independent of the split criterion",
     "sequences": [
       {
         "id": "1.1",
         "set": 1,
         "role": "generated",
         "length": 1096,
-        "ncbi": ""
+        "mw": 91081.42,
+        "n_ambiguous": 0
       },
       {
         "id": "1.2",
         "set": 1,
         "role": "blast1",
-        "length": 1650,
-        "ncbi": "UZZ64713.1"
+        "length": 1713,
+        "mw": 165101.21,
+        "n_ambiguous": 0
       },
       {
         "id": "1.3",
         "set": 1,
         "role": "blast2",
-        "length": 1921,
-        "ncbi": "UZU68251.1"
+        "length": 1984,
+        "mw": NaN,
+        "n_ambiguous": 3
       },
       {
         "id": "2.1",
         "set": 2,
         "role": "generated",
         "length": 926,
-        "ncbi": "N/A"
+        "mw": 77765.79,
+        "n_ambiguous": 0
       },
       {
         "id": "2.2",
         "set": 2,
         "role": "blast1",
         "length": 1713,
-        "ncbi": "GIX92750.12 from "
+        "mw": 159478.2,
+        "n_ambiguous": 0
       },
       {
         "id": "2.3",
         "set": 2,
         "role": "blast2",
         "length": 1603,
-        "ncbi": "GFY35630.15 from "
+        "mw": 125416.4,
+        "n_ambiguous": 0
       },
       {
         "id": "3.1",
         "set": 3,
         "role": "generated",
         "length": 312,
-        "ncbi": ""
+        "mw": 29754.17,
+        "n_ambiguous": 0
       },
       {
         "id": "3.2",
         "set": 3,
         "role": "blast1",
         "length": 367,
-        "ncbi": "AWK58654.13 from "
+        "mw": 35845.68,
+        "n_ambiguous": 0
       },
       {
         "id": "3.3",
         "set": 3,
         "role": "blast2",
         "length": 279,
-        "ncbi": "AWK58646.1 from 3"
+        "mw": 26864.21,
+        "n_ambiguous": 0
       },
       {
         "id": "4.1",
         "set": 4,
         "role": "generated",
         "length": 869,
-        "ncbi": ""
+        "mw": 69899.23,
+        "n_ambiguous": 0
       },
       {
         "id": "4.2",
         "set": 4,
         "role": "blast1",
         "length": 648,
-        "ncbi": "AAK30595.1 from 4"
+        "mw": 52886.51,
+        "n_ambiguous": 0
       },
       {
         "id": "4.3",
         "set": 4,
         "role": "blast2",
-        "length": 2294,
-        "ncbi": "UZZ64708.1"
+        "length": 2357,
+        "mw": 202052.69,
+        "n_ambiguous": 0
       },
       {
         "id": "5.1",
         "set": 5,
         "role": "generated",
         "length": 521,
-        "ncbi": ""
+        "mw": 43816.17,
+        "n_ambiguous": 0
       },
       {
         "id": "5.2",
         "set": 5,
         "role": "blast1",
         "length": 1984,
-        "ncbi": "UZU68251.1"
+        "mw": NaN,
+        "n_ambiguous": 3
       },
       {
         "id": "5.3",
         "set": 5,
         "role": "blast2",
-        "length": 2409,
-        "ncbi": "GFY34551.15 from "
+        "length": 2472,
+        "mw": 224113.32,
+        "n_ambiguous": 0
       }
     ]
   }

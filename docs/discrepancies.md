@@ -237,9 +237,40 @@ getting it wrong falls on someone else.
 `data/raw/table_s4_motifs.csv` was unaffected — it was transcribed from a
 rendered image of Table S4 from the outset, and needs no correction.
 
-## D15 — Table S1 extraction is INCOMPLETE and its outputs are withdrawn
+## D15 — Table S1 extraction: resolved on the second implementation
 
-**Status: open. Do not use `scripts/08_extract_table_s1.py` output.**
+**Status: resolved.** All rows now verify against the published molecular
+weights. The account below of the first, failed attempt is kept because the
+failure mode is worth knowing.
+
+**The rewrite.** The rules are ignored entirely. Every glyph in the sequence
+column is read from `page.chars`, grouped into lines, filtered to residue-only
+lines by content, concatenated in document order, and cut at the lengths
+published in Table S3 in the row order read from the ID column. Because
+published lengths are now an *input*, length cannot verify the result;
+molecular weight does, and it is independent of the split criterion — a split
+off by one position changes the composition of two sequences and both weights.
+
+Result: total 18,844 residues, exactly the Table S3 sum, and **13 of 13
+checkable rows match their published molecular weight to the cent**. The other
+two contain `X` ambiguity codes so ProtParam cannot weigh them; they are
+length-exact and bracketed by verified rows in the same contiguous blob.
+
+One further detail cost 74 residues before it was found: the last line of each
+sequence is a partial one, sometimes only a few residues, and the original
+20-character minimum silently discarded them. No length threshold is needed —
+the residue-only alphabet test alone separates sequence lines from the caption,
+header and page numbers, all of which contain lowercase or digits.
+
+**What it unlocked.** With the sequences verified, the forward task was checked
+against the paper's own specimens and reproduces the published R² exactly on
+four of five sets, with the full eight-value predicted vector identical slot
+for slot. See `RESULTS.md` §8g. That in turn shows the shortfall in §8 is
+entirely in the inverse task's search, not the scorer.
+
+### The first attempt, and why it failed
+
+**Do not use rule-rectangle row detection on this table.**
 
 Table S1 (arXiv:2309.10170, pp. 31-34) holds the five sequences the paper
 generated and their ten BLAST neighbours. Extracting it would allow Figures 5
@@ -267,16 +298,17 @@ of `extract_words` (identical output, so glyphs are being read faithfully);
 tightening the band boundaries to half-open with no tolerance; and changing
 whether a page's leading band belongs to the row above or below.
 
-**Why this is recorded rather than quietly retried.** An earlier version of
-this work ran the forward task on these sequences and reported R2 values
-against the paper's published ones. Those numbers were computed on unverified
-sequences and are **retracted**. They are not in `RESULTS.md` and no
-conclusion in this project rests on them.
+**Why this is recorded rather than quietly retried.** An interim version of
+this work ran the forward task on the corrupted sequences and obtained R2
+values far *below* the published ones — which, had it been believed, would have
+been reported as the paper failing on its own specimens. It was retracted
+before reaching `RESULTS.md`. The corrected extraction gives the opposite
+answer: exact agreement.
 
-The molecular-weight check is what caught this. Length alone passed ten of
-fifteen rows and would have let corrupted sequences through into a headline
-comparison. Any future attempt on this table should verify against MW, not
-length.
+The molecular-weight check is what caught it. Length alone passed ten of
+fifteen rows, because every line in the table is the same width and a line
+misattributed between adjacent rows leaves both lengths unchanged. Any future
+work on this table should verify against MW, not length.
 
 ## D14 — Recovered normalisation constants match the published Table S5 exactly
 

@@ -50,7 +50,9 @@ def main() -> int:
         raise SystemExit(
             f"{args.table_s1} not found. Run scripts/08_extract_table_s1.py first."
         )
-    s1 = pd.read_csv(args.table_s1)
+    # dtype=str on `id`: values like "1.1" are read as float64 otherwise,
+    # which turns "1.10" into 1.1 and breaks every join on it.
+    s1 = pd.read_csv(args.table_s1, dtype={"id": str})
     print(f"{len(s1)} sequences from Table S1\n")
 
     model = SilkomeGPT()
