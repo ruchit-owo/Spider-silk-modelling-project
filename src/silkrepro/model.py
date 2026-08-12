@@ -19,7 +19,7 @@ import torch
 
 from . import config, tasks
 
-# Pinned at first download by scripts/00_setup_model.py, which writes the
+# Pinned at first download by scripts/00_check_env.py, which writes the
 # resolved commit hash here-adjacent (results/model_revision.txt). Set to None
 # to track the branch head.
 MODEL_REVISION = os.environ.get("SILKOME_REVISION") or None
@@ -100,8 +100,10 @@ class SilkomeGPT:
         self.device = torch.device(device)
 
         # float16 on GPU, float32 on CPU. The paper does not state inference
-        # precision; ASSUMPTIONS.md row A6 covers this, and
-        # scripts/10_ablation_precision.py measures whether it matters.
+        # precision; ASSUMPTIONS.md row A6 covers this. The forward task was
+        # verified deterministic at this precision
+        # (scripts/01b_forward_decoding_diagnostics.py), so precision-induced
+        # tie-breaking is not silently changing results.
         if dtype is None:
             dtype = torch.float16 if self.device.type == "cuda" else torch.float32
         self.dtype = dtype

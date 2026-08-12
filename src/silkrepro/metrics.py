@@ -124,7 +124,15 @@ def best_of_n_curve(
     That assumption holds by construction here: the pool *is* independent
     samples at fixed decoding settings.
 
-    Returns {n: {mean, std, p05, p50, p95}}.
+    How far N can be pushed. The bootstrap cannot see beyond the largest value
+    in the pool, so as N approaches the pool size the estimate is dominated by
+    whether the pool maximum happens to be drawn, and it converges to that
+    maximum rather than estimating anything independent of it. Entries with
+    n > len(pool)/10 are therefore flagged `extrapolated: True`, and callers
+    should not quote them as estimates of best-of-N. The default n_values in
+    the scripts respect this.
+
+    Returns {n: {mean, std, p05, p50, p95, extrapolated}}.
     """
     s = np.asarray([x for x in scores if np.isfinite(x)], dtype=float)
     if s.size == 0:
@@ -140,8 +148,20 @@ def best_of_n_curve(
             "p05": float(np.percentile(draws, 5)),
             "p50": float(np.percentile(draws, 50)),
             "p95": float(np.percentile(draws, 95)),
+            "extrapolated": bool(n > s.size / 10),
         }
     return out
+
+
+def reliable_n_grid(pool_size: int, grid: Sequence[int] | None = None) -> list[int]:
+    """The subset of `grid` the bootstrap can support for a pool of this size.
+
+    Caps at pool_size / 10, beyond which best-of-N converges on the pool
+    maximum rather than estimating it.
+    """
+    grid = grid or (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048)
+    limit = max(1, pool_size // 10)
+    return [int(n) for n in grid if n <= limit]
 
 
 def n_required_to_reach(scores: Sequence[float], threshold: float) -> float | None:

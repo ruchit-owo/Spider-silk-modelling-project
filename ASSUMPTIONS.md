@@ -160,8 +160,12 @@ to `data/raw/table_s4_motifs.csv`. `scripts/06_motif_analysis.py` now reports
 
 The fallback path remains in the code for anyone running without the file, and
 still labels its output `canonical_fallback`. See `docs/discrepancies.md` D7
-for the transcribed table and D13 for a sign discrepancy between three of its
-entries and the source it cites.
+for the transcribed table.
+
+All fourteen entries were checked against Table 1 of the Silkome paper they
+derive from and **all fourteen agree**. An earlier version of this note pointed
+at D13 for a supposed sign discrepancy in three of them; that claim was wrong
+and D13 is withdrawn.
 
 ## A9 — Sampling budget N
 

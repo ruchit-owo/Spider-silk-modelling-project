@@ -53,6 +53,19 @@ PAPER_C = "#2f6fa8"
 OURS_C = "#c4552b"
 GREY = "#8a8a8a"
 
+# Prefixes of the control ablations emitted by scripts/11. Kept here as data
+# rather than as a substring literal buried in the plotting code, and asserted
+# against the script's actual output by tests/test_figures.py.
+CONTROL_PREFIXES = ("scattered_control", "block_control")
+
+# Below this, a measured "noise floor" is float rounding rather than a
+# measurement. Mirrors the guard in scripts/11.
+PREDICTION_RESOLUTION = 1e-4
+
+
+def is_control(ablation_name: str) -> bool:
+    return ablation_name.startswith(CONTROL_PREFIXES)
+
 
 def _load(name: str):
     p = config.RESULTS / f"{name}.json"
@@ -74,16 +87,21 @@ def fig_table1() -> None:
     names = [x["set"] for x in s]
     x = np.arange(len(names))
 
+    ns = [v["n_scored"] for v in s]
     fig, ax = plt.subplots(figsize=(7.5, 3.6))
     ax.bar(x - 0.26, [v["paper_r2"] for v in s], width=0.24,
            color=PAPER_C, label="paper (max over unstated N)")
+    # The scoreable pool differs per set (roughly 640-820 after the ~62%
+    # verbatim-copy rate), so a single N in the legend was wrong for seven of
+    # the eight bars. The range goes in the legend; the exact count per set
+    # goes under each tick.
     ax.bar(x, [v["r2_max"] for v in s], width=0.24,
-           color=OURS_C, label=f"ours, max over N={s[0]['n_scored']}")
+           color=OURS_C, label=f"ours, max over N={min(ns)}-{max(ns)}")
     ax.bar(x + 0.26, [v["r2_median"] for v in s], width=0.24,
            color=GREY, label="ours, median single sample")
 
     ax.axhline(0, color="k", lw=0.8)
-    ax.set_xticks(x, names)
+    ax.set_xticks(x, [f"{n}\nN={c}" for n, c in zip(names, ns)], fontsize=8)
     ax.set_xlabel("property set")
     ax.set_ylabel(r"$R^2$ within the 8-vector")
     ax.set_title("Table 1 reproduction: the maximum is a statistic about the search")
@@ -177,10 +195,30 @@ def fig_ablation() -> None:
     floor = res["noise_floor"]["pooled_mean_abs_dev"]
 
     fig, ax = plt.subplots(figsize=(6.6, 0.32 * len(s) + 1.6))
-    colours = [OURS_C if "length_control" not in n else GREY for n in s["ablation"]]
+    # The control ablations are named scattered_control_* and block_control_*.
+    # An earlier version tested for "length_control", a name the script never
+    # produces, so every bar was drawn in the same colour while the title
+    # claimed the controls were grey. tests/test_figures.py now pins the rule
+    # to the names actually emitted.
+    colours = [GREY if is_control(n) else OURS_C for n in s["ablation"]]
     ax.barh(s["ablation"], s["mean_abs_delta"], color=colours)
-    ax.axvline(floor, color="k", ls="--", lw=1.0,
-               label=f"repeat noise floor ({floor:.4f})")
+
+    # Only draw a noise floor if there is one. Under greedy decoding the
+    # forward task is deterministic and the measured floor is ~1e-17, i.e.
+    # zero; script 11 explicitly refuses to divide by it, and a line drawn at
+    # 1e-17 labelled "0.0000" would imply a threshold that does not exist.
+    if floor >= PREDICTION_RESOLUTION:
+        ax.axvline(floor, color="k", ls="--", lw=1.0,
+                   label=f"repeat noise floor ({floor:.4f})")
+    else:
+        ax.plot([], [], " ",
+                label="forward task deterministic; no noise floor to show")
+
+    ref = res.get("reference_scale")
+    if ref:
+        ax.axvline(ref, color=PAPER_C, ls=":", lw=1.2,
+                   label=f"spread across natural sequences ({ref:.3f})")
+
     ax.set_xlabel("mean |change| in the 8-vector prediction")
     ax.set_title("What the forward task reads from the sequence\n"
                  "(grey: length-matched controls)", fontsize=9)

@@ -108,13 +108,19 @@ def main() -> int:
     mech_names = [config.PROPERTY_NAMES[i] for i in config.MECHANICAL_IDX]
     rows = []
     for fam, grp in sample.groupby("family_group"):
-        p = grp[[f"pred_{n}" for n in config.PROPERTY_NAMES]].to_numpy(dtype=float)
+        # Both spreads must be taken over the same four properties. Computing
+        # `within` over all eight while `between` uses only the mechanical four
+        # makes the ratio compare two different quantities - the SD slots vary
+        # more, so it inflates the denominator and understates the ratio.
+        p_mech = grp[[f"pred_{n}" for n in mech_names]].to_numpy(dtype=float)
+        p_all = grp[[f"pred_{n}" for n in config.PROPERTY_NAMES]].to_numpy(dtype=float)
         rows.append(
             {
                 "family": fam,
                 "n": len(grp),
                 **{n: float(grp[f"pred_{n}"].mean()) for n in mech_names},
-                "within_family_sd": float(p.std(axis=0).mean()),
+                "within_family_sd": float(p_mech.std(axis=0).mean()),
+                "within_family_sd_all8": float(p_all.std(axis=0).mean()),
             }
         )
     fam_df = pd.DataFrame(rows).sort_values("family")
@@ -126,6 +132,7 @@ def main() -> int:
     print(f"\n    between-family SD of the mean prediction : {between:.4f}")
     print(f"    mean within-family SD                    : {within:.4f}")
     print(f"    ratio                                    : {ratio:.3f}")
+    print(f"    (both over the four mechanical properties)")
     print("\n    A ratio well below 1 means family membership shifts the")
     print("    prediction far less than sequence-to-sequence variation within")
     print("    a family does.")
@@ -161,6 +168,7 @@ def main() -> int:
             "between_family_sd": between,
             "within_family_sd": within,
             "between_over_within": ratio,
+            "spread_basis": "four mechanical properties, both numerator and denominator",
             "accuracy_by_family": acc_df.to_dict(orient="records"),
             "caveat": (
                 "Silkome mechanical properties are measured on dragline fibre, "

@@ -30,8 +30,51 @@ PAPER_EXAMPLE_SEQUENCE = (
 # config.PROPERTY_NAMES order.
 PAPER_EXAMPLE_PROPERTIES = [0.327, 0.356, 0.261, 0.287, 0.437, 0.190, 0.220, 0.301]
 
-# The paper's "GenerateSilkContent" example uses the same property vector and
-# shows a sequence that differs from the one above in its C-terminal region.
-# We record it for completeness but make no claim about it: the paper does not
-# say whether it is a training record or a generation.
-PAPER_INVERSE_EXAMPLE_DIFFERS_IN_C_TERMINUS = True
+# --------------------------------------------------------------------------
+# The two printed variants
+# --------------------------------------------------------------------------
+#
+# The paper prints two example sequences against this one property vector: one
+# for the forward "CalculateSilkContent" task (above, 635 residues) and one for
+# the inverse "GenerateSilkContent" task, which is longer.
+#
+# The forward example is not a database record. Aligned against silkome record
+# idv_id 7305 (Nephilingis livida, MaSp1, CTD, 671 residues), which IS in the
+# reconstructed 1,033-pair dataset, the 635-residue forward example matches on
+# all 635 of its characters, with a single contiguous 36-residue deletion at
+# record positions 583-619:
+#
+#     RVSSAVSNLVSSGPTNSAALSNTISSVVSQISASNP
+#
+# So the transcription here is byte-exact and the difference is in the paper,
+# which prints two variants of one record. Most likely a slip while preparing
+# the forward example. Stated neutrally; nothing depends on which it is.
+#
+# Both variants return the published property vector from the forward task, so
+# both work as known-answer tests. See docs/discrepancies.md D8.
+
+WORKED_EXAMPLE_IDV_ID = 7305
+WORKED_EXAMPLE_RECORD_LENGTH = 671
+WORKED_EXAMPLE_DELETED_BLOCK = "RVSSAVSNLVSSGPTNSAALSNTISSVVSQISASNP"
+
+
+def silkome_record_variant() -> str:
+    """The full 671-residue silkome record the forward example derives from.
+
+    Loaded from the reconstructed dataset rather than pasted here, so it stays
+    tied to the data actually in use. Raises if the dataset is absent.
+    """
+    from . import dataio
+
+    df = dataio.load_pairs()
+    hits = [
+        s
+        for s in df.loc[df["idv_id"] == WORKED_EXAMPLE_IDV_ID, "sequence"].astype(str)
+        if len(s) == WORKED_EXAMPLE_RECORD_LENGTH
+    ]
+    if not hits:
+        raise LookupError(
+            f"no {WORKED_EXAMPLE_RECORD_LENGTH}-residue record for idv_id "
+            f"{WORKED_EXAMPLE_IDV_ID} in the reconstructed dataset"
+        )
+    return hits[0]

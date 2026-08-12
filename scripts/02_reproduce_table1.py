@@ -53,6 +53,33 @@ def load_existing_pool(set_name: str) -> pd.DataFrame:
     return pd.DataFrame()
 
 
+def state_path(set_name: str) -> Path:
+    return config.RESULTS / "pools" / f"pool_{set_name}_state.json"
+
+
+def load_attempts(set_name: str) -> int:
+    """Generation attempts already made for this set.
+
+    Held separately from the pool CSV because the CSV holds only the attempts
+    that parsed. See the comment in run_one_set.
+    """
+    p = state_path(set_name)
+    if not p.exists():
+        return 0
+    try:
+        with open(p, encoding="utf-8") as fh:
+            return int(json.load(fh).get("attempted", 0))
+    except Exception:
+        return 0
+
+
+def save_state(set_name: str, attempted: int, parse_stats: dict) -> None:
+    p = state_path(set_name)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "w", encoding="utf-8") as fh:
+        json.dump({"attempted": attempted, "parse_stats": parse_stats}, fh, indent=2)
+
+
 def run_one_set(
     model: SilkomeGPT,
     set_name: str,
@@ -65,21 +92,29 @@ def run_one_set(
     fwd_batch_size: int = 16,
 ) -> pd.DataFrame:
     existing = load_existing_pool(set_name) if resume else pd.DataFrame()
-    already = len(existing)
-    if already >= n_samples:
-        print(f"  {set_name}: {already} candidates already on disk, skipping")
+    already_parsed = len(existing)
+    # The budget is counted in *generation attempts*, matching the notebook's
+    # 32 x 64. Roughly 5% of attempts do not parse, so resuming on the parsed
+    # row count would top the pool up on every re-run and grow it past the
+    # budget - inflating the maximum, which is the headline statistic.
+    # Attempts are therefore persisted separately from the rows.
+    already_attempted = load_attempts(set_name) if resume else 0
+    if already_attempted >= n_samples:
+        print(f"  {set_name}: {already_attempted} attempts already made "
+              f"({already_parsed} parsed), budget reached, skipping")
         return existing
 
-    to_generate = n_samples - already
+    to_generate = n_samples - already_attempted
     print(f"  {set_name}: target {target}")
     print(f"  {set_name}: generating {to_generate} candidates "
-          f"({already} already present)")
+          f"({already_attempted} attempts already made, "
+          f"{already_parsed} parsed rows on disk)")
 
     t0 = time.time()
     seqs, stats = model.design_sequences(
         target,
         n=to_generate,
-        seed=seed + already,
+        seed=seed + already_attempted,
         batch_size=batch_size,
     )
     t_gen = time.time() - t0
@@ -128,7 +163,15 @@ def run_one_set(
     out = pd.concat([existing, df], ignore_index=True) if len(existing) else df
     pool_path(set_name).parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(pool_path(set_name), index=False)
-    print(f"  {set_name}: wrote {len(out)} rows to {pool_path(set_name)}")
+    save_state(set_name, already_attempted + to_generate, stats.to_dict())
+    print(f"  {set_name}: wrote {len(out)} rows to {pool_path(set_name)} "
+          f"({already_attempted + to_generate} attempts, "
+          f"parse rate {stats.parse_rate:.3f})")
+    # Returned alongside the pool so the caller can put it in the manifest;
+    # ASSUMPTIONS.md A3 promises the rejection rate is recorded, and printing
+    # it to stdout does not honour that.
+    out.attrs["parse_stats"] = stats.to_dict()
+    out.attrs["attempted"] = already_attempted + to_generate
     return out
 
 
@@ -145,7 +188,11 @@ def summarise(set_name: str, target: list[float], pool: pd.DataFrame) -> dict:
         "target": target,
         "target_spread": metrics.target_spread(target),
         "paper_r2": paper_r2,
-        "n_generated": int(len(pool)),
+        # n_generated used to be recorded as the parsed row count, which made
+        # the parse rate unrecoverable from the manifest. Both are now stored.
+        "n_attempted": int(pool.attrs.get("attempted", load_attempts(set_name))),
+        "n_parsed_rows": int(len(pool)),
+        "parse_stats": pool.attrs.get("parse_stats"),
         "n_novel": int(pool["novel_exact"].sum()),
         "n_forward_parsed": int(pool["forward_parsed"].sum()),
         "n_scored": int(len(r2)),

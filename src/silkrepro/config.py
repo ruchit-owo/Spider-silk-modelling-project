@@ -41,7 +41,7 @@ MODEL_NAME = "lamm-mit/SilkomeGPT"
 
 # PAPER: 12 layers, 8 attention heads, hidden 1024, intermediate 4096,
 # 253.6M parameters, rotary positional embedding, GPT-NeoX-inspired.
-# scripts/01_smoke_test_model.py checks the loaded checkpoint against these.
+# scripts/00_check_env.py checks the loaded checkpoint against these.
 EXPECTED_ARCH = {
     "num_hidden_layers": 12,
     "num_attention_heads": 8,

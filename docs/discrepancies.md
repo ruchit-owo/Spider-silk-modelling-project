@@ -337,22 +337,46 @@ recovering them exactly means we assembled the same population the authors did.
 
 The units, which we did not have before, are recorded here for reference.
 
-## D8 — The worked example sequence, as printed, differs from the Silkome record
+## D8 — The paper prints two variants of one record for its worked example
 
-**Status: confirmed, ours not theirs.**
+**Status: confirmed. Corrected — an earlier version of this entry blamed our
+own tooling for this, wrongly.**
 
-The Experimental Section prints a sequence for the `CalculateSilkContent`
-example. Extracting it from the PDF yields 635 residues, which is a 94.9%
-6-mer-containment match to Silkome record `idv_id 7305` (*Nephilingis livida*,
-MaSp, 671 residues) and not a byte-identical match to anything.
+The Experimental Section prints two example sequences against a single property
+vector: one for the forward `CalculateSilkContent` task and one for the inverse
+`GenerateSilkContent` task. They are not the same sequence.
 
-The difference is almost certainly our PDF text extraction losing characters
-across line wraps, not an error in the paper. We record it because the
-transcription is used in a test: submitting our 635-residue transcription to
-the forward task nonetheless returns exactly the published vector
-`[0.327, 0.356, 0.261, 0.287, 0.437, 0.190, 0.220, 0.301]`, which is the
-strongest single confirmation that we have the right checkpoint and the right
-prompt format.
+Aligning our transcription of the forward example against Silkome record
+`idv_id 7305` (*Nephilingis livida*, MaSp1, CTD, 671 residues), which is in the
+reconstructed 1,033-pair dataset:
+
+```
+matched 635 of 635 characters
+one contiguous deletion, record[583:619], 36 residues:
+    RVSSAVSNLVSSGPTNSAALSNTISSVVSQISASNP
+```
+
+So the 635-residue forward example is the 671-residue database record with one
+36-residue block missing from the C-terminal region, and **our transcription is
+byte-exact** — every character of it matches the record. The earlier claim that
+"our PDF text extraction lost characters across line wraps" was wrong; there is
+nothing wrong with the transcription.
+
+Most likely a slip while preparing the forward example. We state it neutrally
+and make no claim about which of the two variants was intended. Nothing in the
+project depends on the answer.
+
+**This makes the §2 check sharper, not weaker.** Both variants return the
+published vector `[0.327, 0.356, 0.261, 0.287, 0.437, 0.190, 0.220, 0.301]`
+from the forward task — the 635-residue printed example *and* the full
+671-residue database record. So the model returns the published answer for a
+sequence that is not the database record and is missing 36 residues from it,
+which is a stronger statement than the hedged one this entry used to make.
+Both are used as known-answer tests; see `silkrepro.paper_examples`.
+
+The lesson recorded for the project: our own standards cut both ways. Blaming
+our tooling for a discrepancy without checking is as much a failure of
+accuracy as blaming the paper for one.
 
 ## D10 — We do not reach the reported R² on any of the eight property sets
 
@@ -406,7 +430,7 @@ Three things this is not:
   inverse-task generations are verbatim training sequences (D6); the model's
   accuracy collapses on non-MaSp spidroins it never saw (+0.83 → −0.27…−0.54);
   and its predictions barely vary with spidroin family at all (between/within
-  spread ratio 0.162). The same behaviour shows up in both task directions.
+  spread ratio 0.199). The same behaviour shows up in both task directions.
 
 ## D12 — A reviewer comment described a different paper's Figure 7
 

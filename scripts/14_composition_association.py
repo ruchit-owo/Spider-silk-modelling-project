@@ -101,8 +101,12 @@ def main() -> int:
     ap.add_argument("--spidroin", default="MaSp1",
                     help="type label to restrict to; the source focuses on MaSp1")
     ap.add_argument("--top-n", type=int, default=10)
-    ap.add_argument("--select-per-group", type=int, default=5,
-                    help="residues per group to call 'selected', by C_diff")
+    ap.add_argument("--select-per-group", type=int, default=2,
+                    help="residues per group to call 'selected', by C_diff. "
+                         "Kept small deliberately: see the null below")
+    ap.add_argument("--n-null", type=int, default=2000,
+                    help="permutation replicates for the null model")
+    ap.add_argument("--seed", type=int, default=config.SEED)
     args = ap.parse_args()
 
     for name, scheme in aa_groups.SCHEMES.items():
@@ -192,12 +196,81 @@ def main() -> int:
     print(f"  scheme A only          : {''.join(sorted(a - b))}")
     print(f"  scheme B only          : {''.join(sorted(b - a))}")
 
+    # ---- the null model, without which none of this means anything ------
+    #
+    # The selection rule takes the top k residues from each group. Groups are
+    # small - the charged group has 5 members in scheme A and 4 in scheme B -
+    # so with k=5 every charged residue is selected automatically, whatever
+    # the data says. Measured: with k=5, uniform random C_diff recovers 12.7
+    # of the 14 published residues on average, selecting 17.8 of 20. The real
+    # data recovered 12. The overlap statistic was therefore carrying no
+    # information at all, and an earlier version of this project reported it
+    # as convergent evidence. It was not.
+    #
+    # The fix is a null, reported alongside the observed value every time.
     keten = set(aa_groups.KETEN_SELECTED)
+    rng = np.random.default_rng(args.seed)
+
+    def null_distribution(scheme, k, n_rep):
+        out = []
+        for _ in range(n_rep):
+            pooled: dict[str, int] = {}
+            for _prop in mech:
+                noise = {aa: rng.random() for aa in AA_ORDER}
+                df_n = pd.DataFrame(
+                    {
+                        "residue": AA_ORDER,
+                        "group": [aa_groups.group_of(x, scheme) for x in AA_ORDER],
+                        "C_diff": [noise[x] for x in AA_ORDER],
+                    }
+                )
+                picked = (
+                    df_n.sort_values("C_diff", ascending=False)
+                    .groupby("group")
+                    .head(k)["residue"]
+                    .tolist()
+                )
+                for aa in picked:
+                    pooled[aa] = pooled.get(aa, 0) + 1
+            chosen = {x for x, c in pooled.items() if c >= 2}
+            out.append((len(chosen & keten), len(chosen)))
+        return np.array(out)
+
     print(f"\n  Pandey/Chen/Keten reported: {''.join(sorted(keten))}")
-    for nm, sel in ((("scheme A"), a), (("scheme B"), b)):
-        print(f"    {nm}: {len(sel & keten)}/{len(keten)} of their residues "
-              f"recovered; {''.join(sorted(sel - keten))} additional, "
-              f"{''.join(sorted(keten - sel))} missed")
+    print(f"\n  overlap with their list, against a permutation null "
+          f"({args.n_null} replicates,\n  identical selection rule applied to "
+          f"uniform random C_diff):\n")
+
+    null_report = {}
+    for nm, sel, scheme in (
+        ("A_lehninger_style", a, aa_groups.SCHEME_A),
+        ("B_alternative", b, aa_groups.SCHEME_B),
+    ):
+        null = null_distribution(scheme, args.select_per_group, args.n_null)
+        obs = len(sel & keten)
+        p = float(np.mean(null[:, 0] >= obs))
+        null_report[nm] = {
+            "observed_overlap": obs,
+            "observed_n_selected": len(sel),
+            "null_overlap_mean": float(null[:, 0].mean()),
+            "null_overlap_p5": float(np.percentile(null[:, 0], 5)),
+            "null_overlap_p95": float(np.percentile(null[:, 0], 95)),
+            "null_n_selected_mean": float(null[:, 1].mean()),
+            "p_value": p,
+        }
+        print(f"    {nm}")
+        print(f"      observed : {obs}/{len(keten)} recovered, "
+              f"{len(sel)}/20 residues selected")
+        print(f"      null     : {null[:, 0].mean():.1f}/{len(keten)} recovered "
+              f"(p5-p95 {np.percentile(null[:, 0], 5):.0f}-"
+              f"{np.percentile(null[:, 0], 95):.0f}), "
+              f"{null[:, 1].mean():.1f}/20 selected")
+        print(f"      p        : {p:.3f}"
+              + ("   (not distinguishable from chance)" if p > 0.05 else ""))
+
+    print("\n  Read the p-value, not the raw overlap. The selection rule picks")
+    print("  a fixed number of residues per group regardless of the data, so a")
+    print("  high overlap is expected even from noise.")
 
     path = runinfo.write_result(
         "14_composition_association",
@@ -220,6 +293,13 @@ def main() -> int:
             "summary": summary,
             "agreed_by_both_schemes": sorted(a & b),
             "keten_reported": sorted(keten),
+            "permutation_null": null_report,
+            "null_note": (
+                "The top-k-per-group selection rule picks a near-fixed number "
+                "of residues whatever the data says, because the groups are "
+                "small. Overlap with the published list must be read against "
+                "the null, not on its own."
+            ),
             "assumption": (
                 "The source does not give the hydrophobic/polar/charged "
                 "assignment table, and the normalisation is within-group, so "

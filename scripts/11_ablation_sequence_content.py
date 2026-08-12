@@ -6,11 +6,15 @@ in controlled ways and measuring how far the prediction moves.
 
 The ablations, and what each isolates:
 
-    repeat            same sequence, resampled. Not an ablation - this is the
-                      noise floor. The forward task decodes with
-                      do_sample=True, so it is stochastic even at temperature
-                      0.01. Every other effect below is reported as a multiple
-                      of this floor. An effect below the floor is not evidence.
+    repeat            same sequence, resubmitted. Under greedy decoding
+                      (assumption A5) this is deterministic and the floor is
+                      zero, so it cannot reject anything. Reported to
+                      demonstrate the determinism, not relied on as a check.
+
+    point_mutation    one residue swapped for a chemically similar one. This
+                      is the floor that does work: the smallest edit that
+                      changes the sequence at all. An ablation that moves the
+                      prediction no further than this has shown nothing.
 
     shuffle           composition preserved exactly, all order destroyed.
     shuffle_blocks    composition and local motifs preserved, arrangement
@@ -127,6 +131,11 @@ def build_edits(seq: str, rng: np.random.Generator) -> list[tuple[str, str, int]
         edits.append(("core_only", c, len(seq) - len(c)))
 
     edits.append(("random_matched", ablations.random_sequence_matched(seq, rng), len(seq)))
+
+    # The reference floor: the smallest edit that changes the sequence at all.
+    mutated, pos = ablations.conservative_point_mutation(seq, rng)
+    if pos >= 0:
+        edits.append(("point_mutation", mutated, 1))
     return edits
 
 
@@ -163,12 +172,14 @@ def main() -> int:
     rng = np.random.default_rng(args.seed)
     rows = []
     n_pred_fail = 0
+    base_predictions = []
 
     for si, seq in enumerate(probes):
         base = predict(seq, args.seed + si)
         if base is None:
             n_pred_fail += 1
             continue
+        base_predictions.append(base)
 
         for name, edited, changed in build_edits(seq, rng):
             if not edited:
@@ -202,15 +213,13 @@ def main() -> int:
     # only 0.15 across the whole natural dataset, a 0.13 shift is near-total;
     # if it spans 0.8, it is modest. So we measure that span on the same
     # probes and express every effect as a fraction of it.
-    base_preds = []
-    for si, seq in enumerate(probes):
-        p = predict(seq, args.seed + si)
-        if p is not None:
-            base_preds.append(p)
-    base_arr = np.vstack(base_preds)
+    # Reuse the unmodified predictions already computed in the ablation loop
+    # rather than recomputing them with the same seeds - that doubled the
+    # forward passes for identical results.
+    base_arr = np.vstack(base_predictions)
     ref_scale = float(np.mean(np.abs(base_arr - base_arr.mean(axis=0))))
     print(f"\nreference scale: mean |deviation from the mean prediction| "
-          f"across the {len(base_preds)} unmodified probes = {ref_scale:.5f}")
+          f"across the {len(base_predictions)} unmodified probes = {ref_scale:.5f}")
     print("  Effects below are also given as a fraction of this. A fraction "
           "near 1 means\n  the edit moved the prediction as far as a different "
           "natural sequence would.")
@@ -269,7 +278,10 @@ def main() -> int:
                 continue
             diff = (a.loc[common] - b.loc[common]).to_numpy(dtype=float)
             entry[f"n_paired_{control}"] = int(len(common))
-            entry["mean_knockout"] = float(a.loc[common].mean())
+            # Keyed per control: assigning a bare "mean_knockout" inside this
+            # loop left whichever control ran last, which is only harmless
+            # because both share the same sequence indices.
+            entry[f"mean_knockout_vs_{control}"] = float(a.loc[common].mean())
             entry[f"mean_{control}"] = float(b.loc[common].mean())
             entry[f"difference_vs_{control}"] = float(diff.mean())
             entry[f"frac_knockout_larger_than_{control}"] = float(np.mean(diff > 0))
@@ -293,9 +305,10 @@ def main() -> int:
         print("  block     = same number removed as one contiguous run\n")
         for e in paired:
             print(f"  {e['motif']}")
-            print(f"    knockout          {e['mean_knockout']:.5f}")
             for c in ("scattered_control", "block_control"):
                 if f"mean_{c}" in e:
+                    print(f"    knockout          "
+                          f"{e[f'mean_knockout_vs_{c}']:.5f}")
                     print(f"    {c:17s} {e[f'mean_{c}']:.5f}   "
                           f"(knockout - control = {e[f'difference_vs_{c}']:+.5f}, "
                           f"knockout larger in "

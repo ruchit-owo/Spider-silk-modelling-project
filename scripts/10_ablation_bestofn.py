@@ -73,7 +73,9 @@ def main() -> int:
             continue
 
         paper = config.ALL_R2_PAPER[set_name]
-        ns = [n for n in n_grid if n <= r2.size]
+        # Capped at pool/10: past that the bootstrap converges on the pool
+        # maximum instead of estimating best-of-N independently of it.
+        ns = metrics.reliable_n_grid(r2.size, n_grid)
         curve = metrics.best_of_n_curve(r2, ns, rng=rng)
 
         entry = {

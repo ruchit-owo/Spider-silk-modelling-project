@@ -16,26 +16,27 @@ We recover the dataset (1,033 pairs, exactly) and the normalisation constants
 of Table S5, which we could not obtain, verifying the latter against a
 published value to within 0.0005.
 
-The headline R² values do not fully reproduce. Generating 2,048 candidate
-sequences per property set, our maximum falls below the reported value on all
-eight sets, by between 0.011 and 0.436 (mean 0.27). We test one candidate
-explanation — that the paper's stochastic scoring inflates a
-maximum-over-N statistic relative to our deterministic scoring — and reject it:
-the effect is +0.0065. The gap remains unexplained.
+**The forward task reproduces the published R² exactly.** Given the paper's own
+generated sequences, four of the five self-consistency sets return the reported
+R² to four decimal places, with the entire eight-value predicted vector
+identical slot for slot. Our own end-to-end reproduction nonetheless falls
+short on all eight property sets, by between 0.011 and 0.436 — and because the
+scorer reproduces exactly, that shortfall is located precisely: it lies in the
+inverse task's search, which did not find candidates as good as the authors'.
 
 Four extensions characterise what the pipeline is doing. First, the reported R²
-is almost entirely a product of the sampling budget: the median single
-candidate has negative R² in six of eight sets, and the expected best-of-N
-climbs from roughly −0.4 at N=1 to 0.68 at N=512 with no change to the model.
-Second, motif knockouts (poly-A, GGX, GPGXX) shift the forward prediction less
-than a scattered deletion of the same size and land between two length-matched
-controls, giving no evidence of motif-specific sensitivity. Third, a
-composition-only baseline reaches R² 0.80 in-sample and −0.16 cross-validated,
-showing that on this dataset in-sample fit and generalisation are nearly
-unrelated. Fourth, and connecting the rest: the forward task returns the exact
-training label for 71.3% of the fine-tuning pairs, 62.3% of inverse-task
-generations are verbatim training sequences, and accuracy collapses from +0.83
-to between −0.27 and −0.54 on spidroin families outside MaSp.
+is largely a product of the sampling budget: the median single candidate has
+negative R² in six of eight sets, and the expected best-of-N climbs from
+roughly −0.4 at N=1 to between 0.09 and 0.59 at N=64 with no change to the
+model. Second, motif knockouts (poly-A, GGX, GPGXX) land between two
+length-matched controls, giving no evidence of motif-specific sensitivity.
+Third, a composition-only baseline reaches R² 0.80 in-sample and −0.16
+cross-validated, showing that on this dataset in-sample fit and generalisation
+are nearly unrelated. Fourth, and connecting the rest: the forward task returns
+the exact training label for 71.3% of the fine-tuning pairs, 62.3% of
+inverse-task generations are verbatim training sequences, and accuracy
+collapses from +0.83 to between −0.27 and −0.54 on spidroin families outside
+MaSp, while the prediction barely varies with family at all.
 
 None of this contradicts a claim the paper makes. The paper fine-tunes on all
 known pairs, says so, and reports self-consistency rather than held-out
@@ -161,10 +162,33 @@ moved by +0.0259 on one set and by exactly zero on three others, mean +0.0065.
 Scores were identical on 97–99% of candidates. The mechanism is real but two
 orders of magnitude too small to explain a 0.27 gap.
 
-What remains: a larger effective candidate pool in the original run, a
-different random seed, or a selection step not described in the paper or the
-notebook. We cannot distinguish these from the information available, so we
-record the gap as unexplained rather than attributing it to any of them.
+### 3.2 The gap is in the search, not the scorer
+
+Locating the Supporting Information in the arXiv preprint settled this. Table S1
+gives the sequences the paper actually generated and Table S3 gives the property
+vector its forward task predicted for each, so both the input and the expected
+output are known and the scorer can be tested with no sampling at all.
+
+| set | paper R² | ours | predicted vector vs Table S3 |
+|---|---|---|---|
+| S1 | 0.8899 | **0.8899** | **8/8 slots identical** |
+| S2 | 0.5640 | 0.5176 | 6/8 |
+| S3 | 0.7167 | **0.7167** | **8/8** |
+| S4 | 0.7843 | **0.7843** | **8/8** |
+| S5 | 0.7751 | **0.7751** | **8/8** |
+
+Four of five reproduce to four decimals, and not merely in R² — the whole
+eight-value vector matches. S2 agrees on its first six slots and differs on the
+last two, consistent with the paper's sampled decoding diverging from our greedy
+decoding on a low-confidence tail.
+
+So the checkpoint, the prompt format, the parser and our decoding choice are all
+exonerated. What our reproduction failed to match is the *search*: 2,048
+candidates did not contain sequences as good as the ones the authors found.
+Theirs are also markedly longer — 1096, 926, 312, 869 and 521 residues against
+our 530, 493, 471, 185 and 256 — so the two searches explored different regions
+of the space. Why theirs found longer and better candidates we cannot say from
+the information available.
 
 ## 4. Where the reported number actually comes from
 
@@ -222,7 +246,8 @@ from +0.826 to between −0.270 and −0.540, with mean absolute error rising fr
 
 **Its output barely depends on the family at all.** Across those families, the
 between-family spread of the mean prediction is 0.019 against a within-family
-spread of 0.117 — a ratio of 0.162. Handed a spidroin it has not memorised, the
+spread of 0.095 — a ratio of 0.199, both over the same four mechanical
+properties. Handed a spidroin it has not memorised, the
 model emits something close to its training marginal regardless of which silk
 the sequence came from.
 
@@ -310,27 +335,38 @@ individuals by each mechanical property, comparing the top ten against the
 bottom ten on mean per-residue composition, and normalising the differences
 within residue groups gives:
 
-| | residues selected in ≥2 properties |
-|---|---|
-| scheme A | A D E G H I K L M N Q R S T V Y |
-| scheme B | A D E F G I K L M N Q R S T V |
-| **both** | **A D E G I K L M N Q R S T V** |
-
 This follows Supplementary Note 8 of Pandey, Chen & Keten (*Commun. Mater.*
-2024) rather than anything in Lu et al., and recovers 12 of the 14 residues
-that paper reports under either scheme.
+2024) rather than anything in Lu et al. The result is negative, and the way we
+arrived at it is worth reporting.
 
-The two schemes exist because the normalisation is *within group*, so the
-hydrophobic/polar/charged assignment determines the output — and the source
-does not give the assignment table. Rather than pick one and present it as the
-result, we ran two standard schemes differing only on the genuinely contested
-residues (C, G, H, Y). They disagree on H, Y and F. Neither was chosen to
-improve agreement with the published list.
+Our first pass selected the top five residues per group and found that both
+schemes recovered 12 of the 14 residues that paper reports. That looked like
+convergent evidence. It was not. The groups are small — the charged group has
+five members in one scheme and four in the other — so at k=5 every charged
+residue is selected automatically whatever the data says, and the rule picks
+17.8 of 20 residues on average. Applying the identical rule to uniform random
+values recovers **12.7 of 14**, better than our real data managed. The analysis
+could not fail, and an overlap statistic that cannot fail carries no
+information.
 
-We note this at length because it is the general shape of the problem this
-reproduction kept running into: an unstated methodological choice that changes
-the numbers, where the honest move is to measure the sensitivity rather than
-resolve it by fiat.
+With the rule tightened to two per group and a permutation null reported
+alongside:
+
+| scheme | observed | null | p |
+|---|---|---|---|
+| A | 5/14 | 5.3/14 | 0.75 |
+| B | 5/14 | 5.5/14 | 0.79 |
+
+At this dataset size and with this method, the composition signal is not
+distinguishable from chance. That is the finding.
+
+The grouping ambiguity we set out to handle — the source does not give the
+hydrophobic/polar/charged assignment table, and the within-group normalisation
+means the choice changes the output — is real and remains documented. But it
+was not the thing that mattered. We had built a careful sensitivity analysis
+around a secondary ambiguity while the primary statistic was vacuous, which is
+its own kind of lesson: check that an analysis can fail before checking how
+sensitive it is.
 
 ## 8. A labelling issue in Figure 5c
 
@@ -355,18 +391,30 @@ compute both conventions explicitly and report both.
 
 ## 9. What we could not do
 
-Figure 7's motif analysis depends on the motif definitions in Table S4 of the
-Supporting Information, which we could not obtain. Our motif script falls back
-to canonical spidroin motifs and is labelled as a different analysis, not as a
-reproduction of Figure 7. Table S1's generated and BLAST-retrieved sequences
-are likewise unavailable, so Figure 5 is reproduced on our own generations
-against their nearest database neighbours rather than on the paper's specimens.
-The BLAST novelty analysis of Section 2.2 needs Table S2 or network BLAST; we
-substitute offline k-mer measures and never describe them as alignment
-statistics. AlphaFold2 structure comparison was not attempted.
+For much of this work the Supporting Information was the binding constraint.
+Wiley returns 402 to automated requests, and a file supplied to us as the SI
+turned out to belong to a different paper. Figures 5 and 7 ran against
+substitute specimens, and the motif analysis ran on canonical motifs rather
+than the paper's own.
 
-Of these, only Table S4 blocks a headline figure, and supplying it would switch
-the analysis from fallback to reproduction with no other change.
+That constraint lifted when we found the supplementary tables appended to the
+arXiv preprint of the same work, arXiv:2309.10170, pages 31–38. Figure 7 now
+runs on the Table S4 motif set against the paper's own BLAST specimens, Figure
+5 on its Table S1 sequences, and §3.2's exact check became possible. It is
+worth saying plainly that the substitute-specimen versions of those analyses
+gave materially different answers — the motif congruence ordering across
+property sets was close to reversed — so a reproduction that had stopped at the
+substitutes would have reported something wrong.
+
+What remains genuinely out of reach: the BLAST novelty analysis of Section 2.2,
+which needs network BLAST or a local database that this project does not run
+(Table S2 records the authors' output but does not let us regenerate it); and
+the AlphaFold2 structure comparison of Figure 6, which needs compute we did not
+spend and which the paper itself limits to visual comparison at pLDDT 40–60.
+
+There is also one thing no amount of supplementary material would fix: a
+held-out estimate of forward-task accuracy. That needs retraining with a fold
+held out, which we did not do.
 
 ## 10. Conclusions
 
@@ -376,9 +424,13 @@ published example, and the dataset and its normalisation reconstruct from
 primary sources — the latter verified against a number we did not use in
 deriving it.
 
-The headline R² values reproduce only partially. We fall short on all eight
-property sets by a mean of 0.27, and we could not explain the gap; the one
-mechanism we could test contributes 0.0065 of it.
+The headline R² values reproduce in the part that tests the model and not in
+the part that tests the search. Given the paper's own designed sequences, the
+forward task returns its published R² to four decimals on four of five sets,
+matching the entire predicted vector slot for slot. Run end to end, our own
+search falls short on all eight property sets by a mean of 0.27, because it did
+not find candidates as good as the authors' — not because anything about the
+scorer differs.
 
 The more useful finding is about what those values measure. They are maxima
 over a sampling budget that is not stated, applied to a model that returns the
@@ -395,6 +447,22 @@ experiments: state N alongside any best-of-N result, and hold out a fold. On a
 dataset of 1,033 pairs, a held-out fold is cheap, and our baselines suggest it
 would be informative — the gap between in-sample and cross-validated
 performance on this data is the difference between 0.80 and −0.16.
+
+A word on this reproduction's own reliability, since it bears on how much
+weight the paragraphs above deserve. Three claims we made during this work were
+wrong and were retracted: that three of Table S4's motifs contradicted the
+source it cites (an artifact of reading a two-column table as linear text);
+that the paper's worked example differed from the database record because of
+our own PDF extraction (the transcription was byte-exact — the paper prints two
+variants); and that a composition analysis recovered 12 of 14 published
+residues (a selection rule that could not fail, where random noise scored
+higher). Each was caught by checking against a published quantity that had
+played no part in producing the claim — Silkome's own Table 1, a sequence
+alignment, a permutation null. Each would have survived internal consistency
+checks alone. We report them because a reproduction that lists only its
+successes is not much of a reproduction, and because the pattern is the useful
+part: the failures were all cases where a number looked right and no external
+quantity had been asked to confirm it.
 
 The wider point is not specific to this paper. Generative design pipelines that
 chain an inverse task into a forward task and report the agreement are

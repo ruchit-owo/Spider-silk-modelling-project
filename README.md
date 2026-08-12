@@ -39,14 +39,17 @@ questions the paper leaves open.
   **recovered independently and verified** against the paper's own published
   values to within 0.0005 on all eight properties (assumption A2).
 
+- **The forward task reproduces the published R² exactly.** Given the paper's
+  own generated sequences (Table S1), four of the five self-consistency sets
+  return the published R² to four decimals, with the full eight-value
+  predicted vector identical slot for slot.
+- **Figure 7 is reproduced** using the paper's Table S4 motif set, against its
+  own BLAST comparison sequences.
+
 **Reproduced with the number restated.** The headline R² values are maxima over
 a pool of sampled candidates whose size the paper does not give. The released
-notebook's pool is 2,048 per property set. See `RESULTS.md`.
-
-**Not reproduced.** Figure 7's motif analysis, because it depends on Table S4
-of the Supporting Information, which we could not obtain. The fallback analysis
-in `scripts/06_motif_analysis.py` uses canonical spidroin motifs and is
-labelled as a different analysis, not as Figure 7.
+notebook's pool is 2,048 per property set. Our own search does not find
+candidates as good as theirs — see `RESULTS.md` §8 and §8g.
 
 Everything above is set out in detail in **[`RESULTS.md`](RESULTS.md)**, with
 each claim tagged as *measured*, *derived* or *assumed*.
@@ -126,8 +129,13 @@ python scripts/13_extension_nonmasp.py --fasta <fasta> --mech <csv>
 python scripts/99_make_figures.py                  # CPU only
 ```
 
-`scripts/02_reproduce_table1.py` writes incrementally and resumes, so it can be
-interrupted. Pass `--n 128` for a quick pass.
+`scripts/02_reproduce_table1.py` resumes at property-set granularity: each set
+is written when it finishes, so an interrupt loses only the set in progress,
+not the whole run. `--n` counts *generation attempts*, matching the notebook's
+32 × 64, and the attempt count is persisted separately from the parsed rows —
+about 5% of attempts never parse, so resuming on row count alone would grow the
+pool past the budget on every re-run and inflate the maximum. Pass `--n 128`
+for a quick pass.
 
 ## Layout
 
@@ -146,7 +154,7 @@ src/silkrepro/      library code; every constant tagged PAPER / CODE / OURS
   motifs.py           motif counting and positions
   runinfo.py          run manifests
 scripts/            one script per analysis; all write manifests
-tests/              82 tests; `-m slow` needs the checkpoint
+tests/              66 tests (63 without `-m slow`, which needs the checkpoint)
 docs/               methods and discrepancies
 data/raw/           hand-supplied inputs (see its README)
 results/            JSON + CSV outputs, each with provenance
@@ -158,8 +166,8 @@ figures/            generated figures
 | file | contents |
 |---|---|
 | [`RESULTS.md`](RESULTS.md) | every measured number, with measured/derived/assumed tags |
-| [`ASSUMPTIONS.md`](ASSUMPTIONS.md) | all 14 choices the paper does not specify, with reasoning and evidence |
-| [`docs/discrepancies.md`](docs/discrepancies.md) | 9 discrepancies and open points, stated neutrally |
+| [`ASSUMPTIONS.md`](ASSUMPTIONS.md) | all 15 choices the paper does not specify, with reasoning and evidence |
+| [`docs/discrepancies.md`](docs/discrepancies.md) | 15 discrepancies and open points, stated neutrally |
 | [`docs/methods.md`](docs/methods.md) | what the paper does, in enough detail to follow the code |
 | [`MANUSCRIPT.md`](MANUSCRIPT.md) | the write-up |
 

@@ -1,8 +1,8 @@
 {
   "manifest": {
     "script": "scripts/14_composition_association.py",
-    "timestamp_utc": "2026-08-07T18:18:46+00:00",
-    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "timestamp_utc": "2026-08-12T03:41:14+00:00",
+    "git_commit": "fd6ddcb70c010f46ab57c440f0a6dcff30c48ee3",
     "git_dirty": true,
     "platform": "Windows-11-10.0.26200-SP0",
     "versions": {
@@ -24,7 +24,7 @@
     "params": {
       "spidroin": "MaSp1",
       "top_n": 10,
-      "select_per_group": 5
+      "select_per_group": 2
     }
   },
   "result": {
@@ -115,20 +115,11 @@
         "scheme": "A_lehninger_style",
         "selected": [
           "A",
-          "D",
-          "E",
           "G",
           "H",
-          "I",
           "K",
-          "M",
-          "N",
-          "Q",
-          "R",
           "S",
-          "T",
-          "V",
-          "Y"
+          "T"
         ]
       },
       {
@@ -136,18 +127,10 @@
         "scheme": "B_alternative",
         "selected": [
           "A",
-          "D",
           "E",
           "G",
-          "I",
           "K",
-          "L",
-          "M",
-          "N",
-          "Q",
-          "R",
           "S",
-          "T",
           "V"
         ]
       },
@@ -156,20 +139,11 @@
         "scheme": "A_lehninger_style",
         "selected": [
           "A",
-          "D",
           "E",
           "G",
-          "H",
-          "I",
-          "K",
-          "L",
-          "N",
           "Q",
           "R",
-          "S",
-          "T",
-          "V",
-          "Y"
+          "S"
         ]
       },
       {
@@ -177,19 +151,11 @@
         "scheme": "B_alternative",
         "selected": [
           "A",
-          "D",
           "E",
-          "G",
-          "I",
-          "K",
           "L",
-          "N",
           "Q",
           "R",
-          "S",
-          "T",
-          "V",
-          "Y"
+          "S"
         ]
       },
       {
@@ -197,20 +163,11 @@
         "scheme": "A_lehninger_style",
         "selected": [
           "A",
-          "D",
           "E",
-          "F",
-          "G",
-          "H",
           "K",
-          "M",
-          "N",
           "P",
           "Q",
-          "R",
-          "S",
-          "T",
-          "Y"
+          "S"
         ]
       },
       {
@@ -218,58 +175,33 @@
         "scheme": "B_alternative",
         "selected": [
           "A",
-          "D",
           "E",
-          "F",
           "G",
-          "I",
           "K",
-          "M",
-          "N",
           "P",
-          "Q",
-          "R",
-          "S",
-          "T"
+          "Q"
         ]
       },
       {
         "property": "strain",
         "scheme": "A_lehninger_style",
         "selected": [
-          "C",
-          "D",
           "E",
           "G",
-          "H",
-          "I",
           "K",
-          "L",
-          "M",
-          "N",
           "Q",
-          "R",
           "T",
-          "V",
-          "Y"
+          "V"
         ]
       },
       {
         "property": "strain",
         "scheme": "B_alternative",
         "selected": [
-          "D",
           "E",
-          "F",
           "G",
-          "H",
           "I",
           "K",
-          "L",
-          "M",
-          "N",
-          "Q",
-          "R",
           "T",
           "V"
         ]
@@ -279,99 +211,60 @@
       "A_lehninger_style": {
         "counts": {
           "A": 3,
-          "D": 4,
-          "E": 4,
-          "G": 4,
-          "H": 4,
-          "I": 3,
-          "K": 4,
-          "M": 3,
-          "N": 4,
-          "Q": 4,
-          "R": 4,
+          "G": 3,
+          "H": 1,
+          "K": 3,
           "S": 3,
-          "T": 4,
-          "V": 3,
-          "Y": 4,
-          "L": 2,
-          "F": 1,
+          "T": 2,
+          "E": 3,
+          "Q": 3,
+          "R": 1,
           "P": 1,
-          "C": 1
+          "V": 1
         },
         "selected_in_2plus_properties": [
           "A",
-          "D",
           "E",
           "G",
-          "H",
-          "I",
           "K",
-          "L",
-          "M",
-          "N",
           "Q",
-          "R",
           "S",
-          "T",
-          "V",
-          "Y"
+          "T"
         ]
       },
       "B_alternative": {
         "counts": {
           "A": 3,
-          "D": 4,
           "E": 4,
-          "G": 4,
-          "I": 4,
-          "K": 4,
-          "L": 3,
-          "M": 3,
-          "N": 4,
-          "Q": 4,
-          "R": 4,
-          "S": 3,
-          "T": 4,
-          "V": 3,
-          "Y": 1,
-          "F": 2,
+          "G": 3,
+          "K": 3,
+          "S": 2,
+          "V": 2,
+          "L": 1,
+          "Q": 2,
+          "R": 1,
           "P": 1,
-          "H": 1
+          "I": 1,
+          "T": 1
         },
         "selected_in_2plus_properties": [
           "A",
-          "D",
           "E",
-          "F",
           "G",
-          "I",
           "K",
-          "L",
-          "M",
-          "N",
           "Q",
-          "R",
           "S",
-          "T",
           "V"
         ]
       }
     },
     "agreed_by_both_schemes": [
       "A",
-      "D",
       "E",
       "G",
-      "I",
       "K",
-      "L",
-      "M",
-      "N",
       "Q",
-      "R",
-      "S",
-      "T",
-      "V"
+      "S"
     ],
     "keten_reported": [
       "D",
@@ -389,6 +282,27 @@
       "V",
       "Y"
     ],
+    "permutation_null": {
+      "A_lehninger_style": {
+        "observed_overlap": 5,
+        "observed_n_selected": 7,
+        "null_overlap_mean": 5.268,
+        "null_overlap_p5": 3.0,
+        "null_overlap_p95": 7.0,
+        "null_n_selected_mean": 7.0425,
+        "p_value": 0.748
+      },
+      "B_alternative": {
+        "observed_overlap": 5,
+        "observed_n_selected": 7,
+        "null_overlap_mean": 5.4715,
+        "null_overlap_p5": 4.0,
+        "null_overlap_p95": 7.0,
+        "null_n_selected_mean": 7.021,
+        "p_value": 0.794
+      }
+    },
+    "null_note": "The top-k-per-group selection rule picks a near-fixed number of residues whatever the data says, because the groups are small. Overlap with the published list must be read against the null, not on its own.",
     "assumption": "The source does not give the hydrophobic/polar/charged assignment table, and the normalisation is within-group, so the grouping determines the output. Two standard schemes are reported; neither was chosen to improve agreement."
   }
 }

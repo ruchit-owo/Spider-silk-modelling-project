@@ -8,9 +8,10 @@ substituted residue in a 400-residue sequence passes it.
 
 The paper's own novelty claim (Section 2.2) rests on BLAST query cover and
 percent identity against the wider protein databases, not on this exact-match
-test. That part needs network BLAST or a local database; see
-scripts/05_novelty_blast.py, which prepares the FASTA and documents what could
-and could not be run offline.
+test. That part needs network BLAST or a local database, neither of which this
+project runs; scripts/07_novelty_audit.py reports the exact-match rate and the
+offline k-mer measures instead, and `write_fasta` below prepares sequences for
+submission to BLAST by hand.
 """
 
 from __future__ import annotations

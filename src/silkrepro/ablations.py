@@ -5,12 +5,19 @@ eight numbers, what in the sequence is it reading? Composition alone? Local
 motifs? Residue order? Length?
 
 Each ablation is a controlled edit that destroys one kind of information while
-holding others fixed. The prediction shift it produces is only meaningful
-relative to a noise floor, because the forward task decodes with do_sample=True
-(temperature 0.01, top_k 500 - see config.py), so the same sequence submitted
-twice need not give the same answer. `repeat_noise_floor` in this module
-measures that floor, and no ablation result in this project is reported
-without it.
+holding others fixed. The prediction shift it produces is only meaningful against a reference, and
+this project uses two.
+
+`repeat_noise_floor` resubmits the identical prompt. Under the project's greedy
+decoding (assumption A5) that floor is zero by construction and can never
+reject anything; it is kept only to demonstrate the determinism, not as a
+safeguard. It would be a live check under the released notebook's sampled
+decoding.
+
+`conservative_point_mutation` provides the reference that does work: the
+smallest edit that changes the sequence at all, one residue swapped for a
+chemically similar one. An ablation that moves the prediction no further than a
+single conservative substitution has not shown anything.
 
 Confounds are named in each docstring rather than left for the reader to spot.
 The two that recur:
@@ -229,6 +236,38 @@ class AblationResult:
             row[f"edit_{p}"] = float(self.edited_pred[i])
             row[f"delta_{p}"] = float(self.delta[i])
         return row
+
+
+def conservative_point_mutation(
+    sequence: str, rng: np.random.Generator
+) -> tuple[str, int]:
+    """Substitute one residue for a chemically similar one.
+
+    The smallest edit that changes the sequence at all, and a far more useful
+    reference than resubmitting the identical prompt. Under greedy decoding the
+    repeat floor is exactly zero by construction, so it can never reject
+    anything; a one-residue conservative substitution gives a floor an effect
+    can actually fall below.
+
+    "Conservative" means within the same hydrophobic / polar / charged class,
+    so the edit is minimal in composition as well as in length. Positions are
+    chosen uniformly; the returned index lets a caller check the choice.
+    """
+    from .aa_groups import SCHEME_A, group_of
+
+    if not sequence:
+        return sequence, -1
+    for _ in range(50):  # a few tries in case a class has no alternative
+        i = int(rng.integers(len(sequence)))
+        aa = sequence[i]
+        if aa not in AA_ORDER:
+            continue
+        peers = sorted(SCHEME_A[group_of(aa, SCHEME_A)] - {aa})
+        if not peers:
+            continue
+        repl = peers[int(rng.integers(len(peers)))]
+        return sequence[:i] + repl + sequence[i + 1 :], i
+    return sequence, -1
 
 
 def repeat_noise_floor(

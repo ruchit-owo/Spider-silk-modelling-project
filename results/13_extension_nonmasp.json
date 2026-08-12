@@ -1,8 +1,8 @@
 {
   "manifest": {
     "script": "scripts/13_extension_nonmasp.py",
-    "timestamp_utc": "2026-08-07T19:03:01+00:00",
-    "git_commit": "1994cb17672c6ca43ea937d0dc6eeab1df32ac14",
+    "timestamp_utc": "2026-08-12T04:11:50+00:00",
+    "git_commit": "fd6ddcb70c010f46ab57c440f0a6dcff30c48ee3",
     "git_dirty": true,
     "platform": "Windows-11-10.0.26200-SP0",
     "versions": {
@@ -47,7 +47,8 @@
         "E": 0.2647166666666667,
         "strength": 0.33893333333333325,
         "strain": 0.27738333333333337,
-        "within_family_sd": 0.12458905699287384
+        "within_family_sd": 0.10275805724974599,
+        "within_family_sd_all8": 0.12458905699287384
       },
       {
         "family": "AgSp",
@@ -56,7 +57,8 @@
         "E": 0.25301754385964914,
         "strength": 0.3227719298245614,
         "strain": 0.27573684210526317,
-        "within_family_sd": 0.11668222570390428
+        "within_family_sd": 0.08659471196831932,
+        "within_family_sd_all8": 0.11668222570390428
       },
       {
         "family": "CySp",
@@ -65,7 +67,8 @@
         "E": 0.20862068965517244,
         "strength": 0.322,
         "strain": 0.31027586206896557,
-        "within_family_sd": 0.10728464120559358
+        "within_family_sd": 0.08905919756193885,
+        "within_family_sd_all8": 0.10728464120559358
       },
       {
         "family": "Flag",
@@ -74,7 +77,8 @@
         "E": 0.25789830508474576,
         "strength": 0.300864406779661,
         "strain": 0.2616271186440678,
-        "within_family_sd": 0.11724902574327987
+        "within_family_sd": 0.07829227595452411,
+        "within_family_sd_all8": 0.11724902574327987
       },
       {
         "family": "MaSp",
@@ -83,7 +87,8 @@
         "E": 0.22679999999999997,
         "strength": 0.28653333333333336,
         "strain": 0.3251499999999999,
-        "within_family_sd": 0.14489527298776583
+        "within_family_sd": 0.1330274354307321,
+        "within_family_sd_all8": 0.14489527298776583
       },
       {
         "family": "MiSp",
@@ -92,7 +97,8 @@
         "E": 0.2342,
         "strength": 0.3095333333333333,
         "strain": 0.27925000000000005,
-        "within_family_sd": 0.10770321979596277
+        "within_family_sd": 0.07631606921172282,
+        "within_family_sd_all8": 0.10770321979596277
       },
       {
         "family": "PySp",
@@ -101,12 +107,14 @@
         "E": 0.2728305084745763,
         "strength": 0.33618644067796605,
         "strain": 0.30064406779661024,
-        "within_family_sd": 0.09961743320772376
+        "within_family_sd": 0.0994765647824248,
+        "within_family_sd_all8": 0.09961743320772376
       }
     ],
     "between_family_sd": 0.01894833963498884,
-    "within_family_sd": 0.11686012509101484,
-    "between_over_within": 0.1621454676711256,
+    "within_family_sd": 0.09507490173705828,
+    "between_over_within": 0.1992990714562386,
+    "spread_basis": "four mechanical properties, both numerator and denominator",
     "accuracy_by_family": [
       {
         "family": "MaSp",

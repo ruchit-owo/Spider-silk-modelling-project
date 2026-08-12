@@ -160,10 +160,19 @@ to visual comparison at pLDDT 40–60.
 | composition baseline | `12_baseline_composition.py` | how far do amino-acid counts alone get you? |
 | out-of-distribution | `13_extension_nonmasp.py` | does the prediction depend on the spidroin family at all? |
 
-The sequence-content ablations are always reported against a measured noise
-floor: the forward task's own spread when the identical prompt is resubmitted.
-An effect smaller than that floor is not evidence of anything, and the code
-computes the floor before it computes any effect.
+The sequence-content ablations are reported against two references.
+
+Resubmitting the identical prompt gives a floor of exactly zero, because the
+project decodes the forward task greedily (assumption A5). That floor is
+therefore vacuous — it cannot reject anything — and is reported only to
+demonstrate the determinism. It would be a live check under the released
+notebook's sampled decoding, which is why it exists.
+
+The reference that does work is a single conservative point mutation: one
+residue swapped for a chemically similar one, the smallest edit that changes
+the sequence at all. Measured at 0.0148, about 0.17 of the spread the model
+shows across different natural sequences. An ablation that moves the prediction
+no further than that has shown nothing.
 
 ## 8. Validation
 
