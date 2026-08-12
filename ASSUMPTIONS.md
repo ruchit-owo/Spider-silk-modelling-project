@@ -100,6 +100,15 @@ are *not* BLAST and are never presented as BLAST; they are order-insensitive
 and will not equal percent identity. Their merit is that they run offline and
 are deterministic.
 
+**Now partially calibrated.** With Table S2 in hand, the proxies can be put
+next to real BLAST output for the first time. Over the five generated
+sequences, 6-mer containment correlates **+0.65** with the published query
+cover and **−0.55** with percent identity. Five points establish nothing, but
+the sign pattern is the expected one for a set-overlap measure: it tracks how
+much of the sequence aligns, not how similar the aligned part is. So the proxy
+is a stand-in for query cover, if anything, and not for identity. See
+`RESULTS.md` §8j.
+
 ## A5 — Greedy decoding for the forward task
 
 **Deviation from the released notebook, with measured justification.** The

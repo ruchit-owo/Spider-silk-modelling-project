@@ -1,0 +1,16 @@
+id,role,ambiguity_handling,mw,mw_pub,mw_ok,ii,ii_pub,ii_ok,pi,pi_pub,pi_ok
+1.1,generated,as_extracted,91081.42,91081.42,True,31.42,31.42,True,8.2,8.2,True
+1.2,blast1,as_extracted,165101.21,165101.21,True,59.08,59.08,True,6.95,6.95,True
+1.3,blast2,X_as_average_residue,170811.62,170811.62,True,28.88,28.55,False,5.74,5.74,True
+2.1,generated,as_extracted,77765.79,77765.79,True,32.81,32.81,True,8.27,8.27,True
+2.2,blast1,as_extracted,159478.2,159478.2,True,47.48,47.48,True,9.87,9.87,True
+2.3,blast2,as_extracted,125416.4,125416.4,True,13.67,13.67,True,9.41,9.41,True
+3.1,generated,as_extracted,29754.17,29754.17,True,37.68,37.68,True,4.88,4.88,True
+3.2,blast1,as_extracted,35845.68,35845.68,True,32.74,32.74,True,5.77,5.77,True
+3.3,blast2,as_extracted,26864.21,26864.21,True,44.49,44.49,True,4.88,4.88,True
+4.1,generated,as_extracted,69899.23,69899.23,True,22.41,22.41,True,7.84,7.84,True
+4.2,blast1,as_extracted,52886.51,52886.51,True,22.5,22.5,True,7.98,7.98,True
+4.3,blast2,as_extracted,202052.69,202052.69,True,29.9,29.9,True,7.91,7.91,True
+5.1,generated,as_extracted,43816.17,43816.17,True,28.23,28.23,True,6.1,6.1,True
+5.2,blast1,X_as_average_residue,170811.62,170811.62,True,28.88,28.55,False,5.74,5.74,True
+5.3,blast2,as_extracted,224113.32,224113.32,True,29.07,29.07,True,9.55,9.55,True

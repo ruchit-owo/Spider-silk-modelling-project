@@ -6,6 +6,9 @@ __pycache__/
 
 # Large inputs that are not ours to redistribute. See data/raw/README.md.
 data/raw/*.csv
+!data/raw/table_s1_sequences.csv
+!data/raw/table_s2_novelty.csv
+!data/raw/table_s3_properties.csv
 !data/raw/table_s4_motifs.csv
 data/raw/*.xlsx
 data/raw/*.json

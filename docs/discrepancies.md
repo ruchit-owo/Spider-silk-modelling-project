@@ -174,9 +174,9 @@ S4 on p. 37, S5 on p. 38.
 
 | SI item | contents | status now |
 |---|---|---|
-| Table S1 | the five published generated sequences and ten BLAST neighbours | **available**, not yet incorporated; would let Figures 5 and 7 be compared against the paper's own specimens rather than nearest database neighbours |
-| Table S2 | BLAST query cover and percent identity | **available**, not yet incorporated |
-| Table S3 | ProtParam values and pLDDT scores | **available**, not yet incorporated |
+| Table S1 | the five published generated sequences and ten BLAST neighbours | **obtained and in use** (`data/raw/table_s1_sequences.csv`), verified against the Table S3 molecular weights. Figures 5 and 7 now run against the paper's own specimens; see D15 and `RESULTS.md` §8g–8h |
+| Table S2 | BLAST query cover and percent identity | **obtained and in use** (`data/raw/table_s2_novelty.csv`); used to calibrate our k-mer novelty proxy for the first time, `RESULTS.md` §8j |
+| Table S3 | ProtParam values and pLDDT scores | **obtained and in use** (`data/raw/table_s3_properties.csv`); our descriptors match on 15/15 molecular weights and isoelectric points, 13/15 instability indices, `RESULTS.md` §8i. The pLDDT column is recorded but not used, since Figure 6 was not attempted |
 | Table S4 | the motif definitions | **obtained and in use.** `data/raw/table_s4_motifs.csv`; `scripts/06_motif_analysis.py` now reports `motif_source = table_s4`, so Figure 7 is a genuine reproduction. All 14 entries verified against the Silkome Table 1 they derive from (D13) |
 | Table S5 | normalisation constants | **obtained, and it confirms our independent recovery exactly** on all eight properties - see A2 and D14 |
 

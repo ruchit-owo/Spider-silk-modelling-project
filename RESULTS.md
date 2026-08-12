@@ -374,6 +374,68 @@ a different and misleading picture (S2 at 0.99, S4 at −0.02). Using the paper'
 actual comparison sequences changes the answer, which is worth remembering
 whenever a substitute specimen stands in for a published one.
 
+## 8i. Our descriptors match the paper's published ones
+
+**measured** (`scripts/09b_verify_against_tables_s2_s3.py`)
+
+Table S3 publishes molecular weight, instability index and isoelectric point
+for all fifteen Table S1 sequences, computed with ProtParam. Recomputing them
+from the extracted sequences:
+
+| descriptor | agreement |
+|---|---|
+| molecular weight | **15/15** |
+| isoelectric point | **15/15** |
+| instability index | 13/15 |
+
+This validates the Figure 5 reproduction against the authors' own output rather
+than against our expectations, and it would have caught a Biopython version
+difference, a units error, or a bad sequence.
+
+Two details resolved along the way, both concerning the `X` ambiguity codes in
+sequences 1.3 and 5.2 (the same accession):
+
+- Biopython refuses to weigh a sequence containing `X`, yet the paper reports a
+  weight. Recovering the implied mass — (published MW − MW with `X` dropped) /
+  number of `X` — gives **111.985 Da**, the conventional average residue mass,
+  for both sequences independently. So the paper's tool weighed unknown
+  residues as average ones rather than discarding them. Applying that
+  convention reproduces both published weights exactly.
+- The instability index still differs for those two (28.88 against a published
+  28.55). That index is computed from dipeptides, and removing an `X` joins the
+  residues on either side into a dipeptide that was never in the sequence. The
+  residual is a consequence of how the unknown residue is handled, not a
+  disagreement about the sequence. We report it rather than tuning it away.
+
+## 8j. What the k-mer novelty proxy actually tracks
+
+**measured** (`scripts/09b_verify_against_tables_s2_s3.py`)
+
+Our offline k-mer measures stand in for BLAST (assumption A4) and had never
+been calibrated against anything. Table S2 publishes, per property set, the
+highest BLAST query cover and percent identity, which allows a first check:
+
+| | vs published QC | vs published id% |
+|---|---|---|
+| max 6-mer containment | **+0.65** | −0.55 |
+| max 6-mer Jaccard | +0.62 | −0.50 |
+
+Over five points, so nothing here is established. What the sign pattern
+suggests is worth recording anyway: the k-mer measures track **query cover**,
+how much of the sequence aligns, and if anything run *opposite* to percent
+identity. That is the expected behaviour for an order-insensitive set overlap,
+and it means the proxy is not a stand-in for identity even loosely. A4 already
+said it is not percent identity; this puts a number on the distinction.
+
+**A note on the paper's own novelty criterion**, applied to its own numbers.
+The paper cites 50–60% similarity as the threshold below which a sequence
+counts as novel. Highest percent identity by set: 38, **72**, 46, 44.5, 44.
+Set 2 sits above the threshold — but at a query cover of 11%, an alignment
+covering a ninth of the query. The paper's own note for set 2 reads that the
+sequences "display limited alignment, yet reasonable composition similarities".
+Identity read without cover would overstate the similarity, so the pair belongs
+together; we record both rather than either alone.
+
 ## 8a. Best-of-N — where the reported number comes from
 
 **derived** (`scripts/10_ablation_bestofn.py`)

@@ -1,0 +1,6 @@
+set,highest_qc_pct,highest_id_pct,common_qc_low_pct,common_qc_high_pct,common_id_low_pct,common_id_high_pct,novelty_analysis
+1,97,38,5,39,38,62,"Only one sequence exhibits a high alignment and QC values drop significantly for others. Besides, overall, there is a notable deficiency in composition similarity across all sequences"
+2,11,72,8,11,57,81,"In general, the sequences display limited alignment, yet reasonable composition similarities are evident"
+3,98,46,88,98,38,62,"Significant sequence alignments are apparent for the majority of sequences. However, due to the considerably shorter length of the query compared to the searched sequence, the comparison consistency is diminished, leading to lower coherence. Additionally, there is a lack of substantial composition similarity"
+4,18,44.5,8,18,44,87,"In general, there is a lack of substantial sequence alignments, although there is a reasonable level of similarity in sequence composition"
+5,98,44,10,55,38,98,"There is only one instance characterized by a high sequence alignment, while the remaining cases exhibit significantly lower QC values. Furthermore, there is a lack of notable similarities in sequence composition across all instances"
