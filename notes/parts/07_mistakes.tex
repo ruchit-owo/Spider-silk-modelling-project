@@ -1,0 +1,335 @@
+\chapter{Three things I got wrong}
+\label{ch:mistakes}
+
+Three times I stated a result and had to withdraw it. This chapter is not
+penance --- the pattern across the three turned out to be the most transferable
+thing in the project, and all three are instructive in different ways.
+
+\section{Retraction 1: a sign discrepancy that was not there}
+\label{sec:d13}
+
+\paragraph{The claim.} The paper's motif table (Table~S4) defines fourteen
+short sequence motifs, each tagged as increasing or decreasing a mechanical
+property, and states they were ``selected and concluded from Table 1'' of the
+Silkome paper. I compared the two and reported that \emph{three} motifs carried
+the opposite sign to their cited source --- including \aaseq{GQ}, which the paper
+uses to support a conclusion about high-modulus designs.
+
+That is a serious thing to say about a published paper.
+
+\paragraph{What actually happened.} I had read the Silkome Table 1 via automated
+retrieval of a web page --- twice, by different routes, which agreed. Both were
+wrong in the same way.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  cell/.style={draw=greyc!60,minimum height=0.5cm,inner sep=3pt},
+]
+% left: the real table
+\node[font=\small\bfseries,text=papercol] at (2.6,2.5) {what the page looks like};
+\node[cell,minimum width=1.5cm,fill=boxbg] at (1.0,2.0) {property};
+\node[cell,minimum width=2.0cm,fill=goodbg] at (2.9,2.0) {positive effect};
+\node[cell,minimum width=2.0cm,fill=warnbg] at (4.9,2.0) {negative effect};
+\node[cell,minimum width=1.5cm] at (1.0,1.5) {Young's mod.};
+\node[cell,minimum width=2.0cm] at (2.9,1.5) {PA in MaSp2};
+\node[cell,minimum width=2.0cm] at (4.9,1.5) {Q in MaSp2};
+\node[cell,minimum width=1.5cm] at (1.0,1.0) {};
+\node[cell,minimum width=2.0cm] at (2.9,1.0) {GL in MaSp1/2};
+\node[cell,minimum width=2.0cm] at (4.9,1.0) {\textbf{MaSp1-GGQ}};
+\node[cell,minimum width=1.5cm] at (1.0,0.5) {};
+\node[cell,minimum width=2.0cm] at (2.9,0.5) {\textbf{MaSp1-GQ}};
+\node[cell,minimum width=2.0cm] at (4.9,0.5) {};
+
+% right: linearised
+\node[font=\small\bfseries,text=ourscol] at (10.0,2.5) {what text extraction returns};
+\node[draw=ourscol!50,fill=codebg,rounded corners=2pt,inner sep=6pt,
+      text width=5.0cm,font=\ttfamily\scriptsize,align=left] at (10.0,1.1)
+  {PA in MaSp2 \quad Q in MaSp2\\
+   GL in MaSp1 and\\
+   Young's modulus \quad MaSp2 \quad MaSp1-GGQ\\
+   MaSp1-GQ};
+
+\node[text width=13cm,align=center,font=\scriptsize,text=greyc] at (6.4,-0.5)
+  {The two columns are separated by \emph{whitespace}, not rules. Linearised
+   extraction interleaves them with each other and with the body text, and the
+   row labels land in the middle. \aaseq{MaSp1-GQ} ends up looking like a
+   negative-effect entry. Both of my retrievals made the same mistake, which is
+   why they agreed.};
+\end{tikzpicture}
+\caption[The column-interleaving failure]{How a two-column table becomes a
+false finding.}
+\label{fig:d13}
+\end{figure}
+
+\paragraph{The fix.} Rendering the page as an \emph{image} and reading it
+visually resolves it in one look. Silkome Table 1 lists \aaseq{QGP} and
+\aaseq{PGA} as \emph{positive} for strain at break and \aaseq{MaSp1-GQ} as
+\emph{positive} for Young's modulus --- exactly what Table~S4 says. All fourteen
+entries agree with their source. The paper's transcription is faithful.
+
+\begin{warnbox}{What I should have done}
+The original entry did flag that it rested on a web fetch and recommended
+checking the source directly. That was right, and doing so is what overturned
+it --- but I should not have published the claim in that state at all. A claim
+that a published paper contradicts its own source has a higher evidence bar than
+a claim about my own measurements, because the cost of being wrong falls on
+someone else.
+\end{warnbox}
+
+\section{Retraction 2: corrupted sequences that passed every length check}
+\label{sec:tables1}
+
+\paragraph{The claim.} Having extracted the paper's own generated sequences
+from Table~S1, I ran them through the forward task and got \Rsq{} values far
+\emph{below} the published ones. That would have read as the paper failing on
+its own specimens.
+
+\paragraph{Why the extraction was wrong.} Table~S1 spans four PDF pages. My
+first extractor used the table's ruling rectangles to find row boundaries. The
+subtlety: the ID cell is vertically \emph{centred} in its row, so in linear text
+the ID appears in the middle of the sequence it labels, and long sequences span
+page breaks.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\scriptsize,
+  ln/.style={draw=greyc!50,fill=boxbg,minimum width=5.0cm,minimum height=0.32cm,
+             inner sep=1pt},
+  bad/.style={ln,fill=warnbg,draw=ourscol!60},
+]
+\node[font=\small\bfseries] at (2.5,2.3) {row 4.3};
+\node[ln] at (2.5,1.9) {\ldots 63 residues \ldots};
+\node[ln] at (2.5,1.55) {\ldots 63 residues \ldots};
+\node[bad] at (2.5,1.2) {\ldots 63 residues \ldots};
+\draw[ourscol,-{Stealth[length=2mm]},thick] (5.15,1.2) to[bend left=30] (5.15,0.35);
+
+\node[font=\small\bfseries] at (2.5,0.75) {row 5.3};
+\node[bad] at (2.5,0.35) {\ldots 63 residues \ldots};
+\node[ln] at (2.5,0.0) {\ldots 63 residues \ldots};
+
+\node[text width=6.4cm,align=left,font=\scriptsize,anchor=west] at (6.0,1.0)
+  {\textbf{Why length could not catch this.}\\[2pt]
+   Every line in the table is the same width. A line attributed to the
+   neighbouring row leaves \emph{both} row lengths unchanged --- one loses 63
+   and gains 63.\\[4pt]
+   Ten of fifteen rows had exactly the right length. \textbf{One} of fifteen had
+   the right molecular weight.};
+\end{tikzpicture}
+\caption[The line-misattribution failure]{Uniform line width makes length a
+useless check. Molecular weight, which depends on every residue identity rather
+than the count, catches it immediately.}
+\label{fig:s1bug}
+\end{figure}
+
+\paragraph{The diagnostic that caught it.} Table~S3 publishes both the
+\emph{length} and the \emph{molecular weight} of all fifteen sequences.
+
+\begin{center}
+\small
+\begin{tabular}{lc}
+\toprule
+length check & 10/15 passed \\
+molecular weight check & \textbf{1/15} passed \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Had I only checked length --- the obvious check --- ten of fifteen rows would have
+passed and I would have published a dramatic, wrong claim about the paper
+failing on its own data.
+
+\paragraph{The rewrite.} Three patches failed. What worked was abandoning the
+approach: ignore the ruling rectangles entirely, read every glyph in the
+sequence column, group into lines, filter to residue-only lines by content,
+concatenate in document order, and cut at the \emph{published lengths} in the ID
+order. Since published lengths are now an input, length can no longer verify
+anything --- molecular weight does, and it is independent of the split criterion.
+
+\begin{goodbox}{Result after the rewrite}
+Total 18{,}844 residues, exactly the Table~S3 sum. \textbf{13 of 13 checkable
+rows match their published molecular weight to the cent.} The other two contain
+\aaseq{X} codes that Biopython cannot weigh; they are length-exact and bracketed
+by verified rows.
+
+And the corrected forward-task result is the \emph{opposite} of the retracted
+one: exact agreement on four of five sets (Section~\ref{sec:exactmatch}).
+\end{goodbox}
+
+One further detail cost 74 residues before it was found: the last line of each
+sequence is a partial one, sometimes only a few residues, and a 20-character
+minimum line length silently discarded them. No length threshold is needed --- the
+residue-only alphabet test alone separates sequence lines from captions,
+headers and page numbers, all of which contain lowercase or digits.
+
+\section{Retraction 3: an analysis that could not fail}
+\label{sec:nullretraction}
+
+\paragraph{The claim.} A composition analysis --- rank spiders by each mechanical
+property, compare the top ten against the bottom ten, find which residues differ
+most --- recovered 12 of the 14 residues a related paper reports, under
+\emph{both} of two amino-acid grouping schemes. I presented that as convergent
+evidence.
+
+\paragraph{Why it was worthless.} The selection rule takes the top $k$ residues
+from each of three groups. With $k = 5$ and groups of 4--6 members, every
+charged residue is selected \emph{automatically}, whatever the data says. The
+rule picks 17.8 of 20 residues on average.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\small,
+  aa/.style={draw=greyc!60,minimum width=0.52cm,minimum height=0.52cm,
+             font=\scriptsize,inner sep=1pt},
+  sel/.style={aa,fill=ourscol!30,draw=ourscol},
+]
+\node[font=\scriptsize\bfseries,anchor=east] at (-0.25,0) {hydrophobic (9)};
+\foreach \i/\l in {0/A,1/V,2/L,3/I,4/P} { \node[sel] at (0.3+0.56*\i,0) {\l}; }
+\foreach \i/\l in {5/F,6/M,7/W,8/G}     { \node[aa]  at (0.3+0.56*\i,0) {\l}; }
+
+\node[font=\scriptsize\bfseries,anchor=east] at (-0.25,-0.7) {polar (6)};
+\foreach \i/\l in {0/S,1/T,2/C,3/Y,4/N} { \node[sel] at (0.3+0.56*\i,-0.7) {\l}; }
+\foreach \i/\l in {5/Q}                 { \node[aa]  at (0.3+0.56*\i,-0.7) {\l}; }
+
+\node[font=\scriptsize\bfseries,anchor=east] at (-0.25,-1.4) {charged (5)};
+\foreach \i/\l in {0/D,1/E,2/K,3/R,4/H} { \node[sel] at (0.3+0.56*\i,-1.4) {\l}; }
+
+\node[anchor=west,font=\scriptsize,text=ourscol,text width=4.4cm] at (5.6,-1.4)
+  {\textbf{all five selected, always} --- the group has exactly five members};
+\node[anchor=west,font=\scriptsize,text=ourscol,text width=4.4cm] at (5.6,-0.7)
+  {five of six selected, always};
+\node[anchor=west,font=\scriptsize,text width=4.4cm] at (5.6,0)
+  {only here does the data matter};
+\end{tikzpicture}
+\caption[The selection artifact]{Top-5-per-group selection when the groups have
+9, 6 and 5 members. Orange is selected. Ten of the twenty residues are chosen
+before the data is consulted.}
+\label{fig:selectionbug}
+\end{figure}
+
+\paragraph{The null that killed it.} Apply the identical selection rule to
+\emph{uniform random} values, 2{,}000 times:
+
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+& \textbf{recovers of 14} & \textbf{selects of 20} \\
+\midrule
+random noise, scheme A & \textbf{12.7} & 17.8 \\
+random noise, scheme B & 12.1 & 16.8 \\
+\emph{my real data} & \emph{12} & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Random data scores \emph{better} than the real data. The statistic carried no
+information whatsoever.
+
+\paragraph{The corrected analysis.} With the rule tightened to two per group and
+a permutation null reported alongside every observed value:
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{scheme} & \textbf{observed} & \textbf{null} & \textbf{$p$} \\
+\midrule
+A & 5/14 & 5.3/14 & \textbf{0.75} \\
+B & 5/14 & 5.5/14 & \textbf{0.79} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{goodbox}{The honest result is negative}
+At this dataset size and with this method, the composition signal is not
+distinguishable from chance.
+\end{goodbox}
+
+\begin{warnbox}{The part that stings}
+I had built a careful two-scheme sensitivity analysis around a \emph{secondary}
+ambiguity --- the amino-acid grouping, which genuinely is unspecified in the
+source --- while the \emph{primary} statistic was vacuous. Check that an analysis
+can fail before checking how sensitive it is to its assumptions.
+\end{warnbox}
+
+\section{Retraction 4, of a sort: being unfair to myself}
+\label{sec:d8}
+
+Not a retraction of a result, but of an attribution, and it went the other way.
+
+The paper's Experimental Section prints a worked example sequence. My
+transcription came to 635 residues and was not a byte-identical match to
+anything in the database. I wrote that off as \emph{my} PDF extraction losing
+characters across line wraps.
+
+Checking it properly:
+
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize,
+  seg/.style={draw=greyc!60,minimum height=0.5cm,inner sep=2pt},
+]
+\node[font=\small\bfseries,anchor=east] at (-0.2,0.55) {database record (671)};
+\node[seg,minimum width=5.0cm,fill=papercol!15] at (2.5,0.55) {583 residues};
+\node[seg,minimum width=1.2cm,fill=warnbg,draw=ourscol] at (5.6,0.55) {36};
+\node[seg,minimum width=1.0cm,fill=papercol!15] at (6.7,0.55) {52};
+
+\node[font=\small\bfseries,anchor=east] at (-0.2,-0.35) {paper's example (635)};
+\node[seg,minimum width=5.0cm,fill=papercol!15] at (2.5,-0.35) {583 residues};
+\node[seg,minimum width=1.0cm,fill=papercol!15] at (5.5,-0.35) {52};
+
+\node[anchor=west,font=\scriptsize,text=ourscol] at (7.4,0.55) {deleted};
+\node[text width=12cm,align=center,font=\scriptsize,text=greyc] at (4.0,-1.2)
+  {All 635 characters match. One contiguous 36-residue block is missing:
+   \aaseq{RVSSAVSNLVSSGPTNSAALSNTISSVVSQISASNP}};
+\end{tikzpicture}
+\end{center}
+
+My transcription is \textbf{byte-exact}. The paper prints two variants of one
+record --- the inverse-task example matches the database, the forward-task
+example is that record minus a 36-residue block. Most likely a slip while
+preparing the example; I state it neutrally and make no claim about which was
+intended.
+
+\begin{goodbox}{And it makes the check stronger}
+Both variants return the published property vector from the forward task ---
+the 635-residue printed example \emph{and} the full 671-residue database record.
+So the model returns the published answer for a sequence that is \emph{not} the
+database record and is missing 36 residues from it. Two known-answer tests
+where I thought I had one, and a sharper statement than the hedge it replaced.
+\end{goodbox}
+
+\begin{keybox}{Standards cut both ways}
+This project's discipline is about not being unfair to the paper. It should
+equally be about not being unfair to my own tooling. Blaming my extraction for a
+discrepancy \emph{without checking} is the same failure of accuracy as blaming
+the paper would have been --- I simply chose the self-deprecating error instead
+of the accusatory one, and felt virtuous doing it.
+\end{keybox}
+
+\section{The pattern}
+
+\begin{keybox}{What the four have in common}
+Every one of them:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item looked right,
+  \item survived internal consistency checks,
+  \item and was caught only by comparison against an \textbf{external published
+        quantity that played no part in generating the claim}.
+\end{enumerate}
+
+The external quantities were: Silkome's own Table 1 read as an image; published
+molecular weights; a permutation null; a sequence alignment.
+
+The generalisable rule I take from this: \emph{for any claim that matters,
+identify a quantity you did not use in producing it, and check against that.}
+Internal consistency is necessary and nowhere near sufficient. My length check
+passed 10/15 while the extraction was badly broken; my two web retrievals agreed
+with each other while both were wrong.
+\end{keybox}
+
+This is also why the project has a test file whose entire job is checking that
+the prose matches the code --- figure colour rules against the ablation names
+actually emitted, README counts against the real counts, cross-references
+against files that exist. Two of the bugs found in a later review would have
+been caught by those tests, and now are.

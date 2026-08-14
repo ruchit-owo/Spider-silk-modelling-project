@@ -1,0 +1,453 @@
+\chapter{The reproduction}
+\label{ch:reproduction}
+
+\section{What "reproduce" means here, and the hardware}
+
+There are degrees of reproduction. From weakest to strongest:
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item Re-run the authors' notebook unchanged.
+  \item Re-implement the analysis from the paper, using their released model.
+  \item Retrain the model from scratch and re-derive everything.
+\end{enumerate}
+
+This project is a thorough version of (2). I rebuilt the data pipeline,
+the metrics and the analysis from the paper's description and primary sources,
+and used the released checkpoint. I did not retrain --- pretraining on 600{,}000
+proteins is well beyond a laptop.
+
+Hardware: an NVIDIA RTX 4050 laptop GPU with 6\,GB of memory. The model is
+253.6M parameters, which at half precision is about 0.5\,GB --- comfortable for
+inference. Total compute for everything in these notes was roughly six
+GPU-hours.
+
+\begin{keybox}{The discipline I held to}
+Every choice the paper does not specify is written down as a numbered
+assumption (A1--A15) with its reasoning and, where possible, evidence. Every
+place my result differs from the paper's, or where the paper is internally
+inconsistent, is a numbered discrepancy (D1--D15) stated neutrally. Every script
+writes a JSON manifest recording the git commit, the model revision, the random
+seed, the platform and the version of every library. No number in these notes
+exists without a file behind it.
+\end{keybox}
+
+\section{Step 1: is the released model the model described?}
+\label{sec:checkpoint}
+
+Before anything else: does the checkpoint on Hugging Face match the paper?
+
+\begin{table}[htbp]
+\centering\small
+\caption{Architecture check. \code{scripts/00\_check\_env.py}.}
+\begin{tabular}{lcc}
+\toprule
+& \textbf{paper} & \textbf{checkpoint} \\
+\midrule
+layers & 12 & 12 \\
+attention heads & 8 & 8 \\
+hidden size & 1024 & 1024 \\
+feed-forward size & 4096 & 4096 \\
+parameters & 253.6\,M & \textbf{253{,}556{,}736} \\
+architecture & GPT-NeoX-style & \code{gpt\_neox} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All four stated hyperparameters match and the parameter count agrees to the
+paper's rounding. The resolved commit hash is recorded so a future run uses
+identical weights.
+
+\subsection{The sharpest test available}
+
+Architecture matching is necessary but weak --- it says nothing about the
+weights. Something stronger was needed: a test with a \emph{known correct
+answer}.
+
+The paper's Experimental Section prints one fine-tuning record in full: a
+sequence, and the eight values paired with it. If this really is the fine-tuned
+model, feeding it that sequence should return that vector.
+
+\begin{goodbox}{It does, exactly}
+\begin{center}
+\code{[0.327, 0.356, 0.261, 0.287, 0.437, 0.190, 0.220, 0.301]}
+\end{center}
+All eight entries, matching the published vector. This exercises the tokenizer,
+the prompt format, the weights and my output parser in one shot, and unlike
+every other test in the project it has an externally known answer.
+\end{goodbox}
+
+There is a wrinkle here that I initially got wrong, and which turned out to be
+in my favour --- it is discrepancy D8 and I tell that story in
+Section~\ref{sec:d8}.
+
+\section{Step 2: rebuilding the 1{,}033-pair dataset}
+\label{sec:dataset}
+
+The paper says its dataset was ``constructed and curated based on the silkome
+dataset'' and contains 1{,}033 pairs. It does not say how. The pairs are not in
+the authors' repository. So they had to be rebuilt from the Silkome release.
+
+My first attempt joined the two Silkome files on \code{ncbi\_tax\_id}, the
+species identifier present in both. It returned \textbf{zero rows}. The field
+exists in both files but shares no values --- they are different numbering
+schemes.
+
+The correct key is \code{idv\_id}: the individual spider.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\small,
+  b/.style={draw=greyc!70,fill=boxbg,rounded corners=2pt,inner sep=6pt,
+            text width=4.6cm,align=center},
+  ar/.style={-{Stealth[length=2.4mm]},thick,greyc!80},
+  num/.style={font=\scriptsize\bfseries,text=ourscol},
+]
+\node[b] (fasta) {\textbf{protein FASTA}\\ \scriptsize 11{,}155 records};
+\node[b,right=2.6cm of fasta] (mech) {\textbf{mechanical properties}\\ \scriptsize 446 individuals};
+\node[b,below=1.0cm of $(fasta)!0.5!(mech)$] (join) {\textbf{join on \code{idv\_id}}\\ \scriptsize 3{,}778 rows};
+\node[b,below=0.8cm of join] (comp) {\textbf{all 8 properties present}\\ \scriptsize 3{,}563 rows};
+\node[b,below=0.8cm of comp,draw=ourscol!70,fill=ourscol!8] (masp)
+  {\textbf{type begins ``MaSp''}\\ \scriptsize \textbf{1{,}033 rows}};
+
+\draw[ar] (fasta.south) -- (join.north west);
+\draw[ar] (mech.south) -- (join.north east);
+\draw[ar] (join) -- (comp);
+\draw[ar] (comp) -- (masp);
+
+\node[right=0.35cm of masp,text width=3.6cm,font=\scriptsize\itshape,text=ourscol]
+  {the paper states 1{,}033. Exact match.};
+\node[left=0.35cm of join,text width=2.9cm,font=\scriptsize\itshape,text=greyc]
+  {joining on \code{ncbi\_tax\_id} instead returns \textbf{0}};
+\end{tikzpicture}
+\caption[Dataset reconstruction]{Rebuilding the fine-tuning set. The rule was
+found by searching for one that lands on the published count; hitting 1{,}033
+exactly is strong evidence it is the authors' rule, though it remains a
+reconstruction (assumption A1).}
+\label{fig:dataset}
+\end{figure}
+
+Three properties of the result are worth knowing:
+
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+  \item \textbf{1{,}033 rows but 1{,}028 distinct sequences.} Five sequences
+        appear twice with \emph{different} property values, because the same
+        protein was recovered from two individuals whose fibres tested
+        differently. So the dataset contains contradictory labels for five
+        inputs. I kept both, since the published count requires it (A12).
+  \item \textbf{553 CTD, 480 NTD.} Terminal-domain-anchored records, as
+        discussed in Section~\ref{sec:silkome}.
+  \item Lengths run 115--1854, median 378. Types: MaSp1 349, MaSp2 331,
+        MaSp 223, MaSp3B 47, MaSp3 43, MaSp2B 40.
+\end{itemize}
+
+\section{Step 3: recovering the normalisation constants}
+\label{sec:normalisation}
+
+To convert raw measurements into the model's $[0,1]$ scale you need the eight
+$(\min, \max)$ pairs. They live in the paper's Table S5, in Supporting
+Information that --- at this stage of the project --- I could not obtain.
+
+So I derived them. The Experimental Section gives one clue: the extremes were
+taken ``across the entire dataset (not limited to MaSp sequences)''. That
+sentence has at least three readings, so I tested all three against the one
+published normalised vector I had, from the worked example.
+
+\begin{table}[htbp]
+\centering\small
+\caption[Normalisation candidates]{Testing three readings of ``the entire
+dataset'' against the paper's own published vector.}
+\begin{tabular}{lc}
+\toprule
+\textbf{population used for min/max} & \textbf{max abs.\ error vs published} \\
+\midrule
+raw \code{mechanical\_properties.csv} (446 rows) & 0.139 \\
+\textbf{sequence-joined, all spidroin types (3{,}563 rows)} & \textbf{0.00047} \\
+sequence-joined, MaSp only (1{,}033 rows) & 0.054 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The middle reading reproduces all eight published values to within the paper's
+own three-decimal rounding.
+
+\begin{goodbox}{Later confirmed outright}
+Much later I located the Supporting Information appended to the arXiv preprint
+of the same paper. Table~S5 is there, with units. Every one of my recovered
+constants matches:
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+property & unit & Table~S5 & recovered \\
+\midrule
+toughness & GJ/m$^3$ & 0.005 -- 0.39 & 0.005 -- 0.39 \\
+SD toughness & GJ/m$^3$ & 0.001 -- 0.136 & 0.001 -- 0.136 \\
+$E$ & GPa & 0.38 -- 37.0 & 0.38 -- 37.0 \\
+SD $E$ & GPa & 0.03 -- 9.76 & 0.03 -- 9.76 \\
+strength & GPa & 0.17 -- 3.33 & 0.17 -- 3.33 \\
+SD strength & GPa & 0.01 -- 0.8 & 0.01 -- 0.8 \\
+strain & \% & 5.1 -- 53.2 & 5.1 -- 53.2 \\
+SD strain & \% & 0.1 -- 13.7 & 0.1 -- 13.7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This also confirms the dataset reconstruction from a second direction: the
+constants are a property of the population they were computed over, so getting
+them exactly right means I assembled the same population the authors did.
+\end{goodbox}
+
+\section{Step 4: a decoding decision, and why it needed measuring}
+\label{sec:decodingchoice}
+
+The released notebook decodes the forward task by \emph{sampling} at
+temperature 0.01. I decode \emph{greedily}. That is a deliberate departure, and
+since departures need justifying, I measured the consequences on 60 real silk
+sequences.
+
+\begin{table}[htbp]
+\centering\small
+\caption[Decoding diagnostics]{\code{scripts/01b\_forward\_decoding\_diagnostics.py}}
+\begin{tabular}{lc}
+\toprule
+\textbf{question} & \textbf{answer} \\
+\midrule
+Do greedy and sampled agree? & identical on \textbf{58/60} (96.7\%) \\
+Where they differ, by how much? & at most 0.38 in one slot, 2 sequences \\
+Does greedy parse at the 64-token budget? & \textbf{60/60} \\
+Does 32 tokens suffice? & \textbf{0/60} --- the answer is cut off \\
+Is greedy invariant to batch size? & \textbf{16/16} identical \\
+Is sampled invariant to batch size? & \textbf{no} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The last row is the reason. I batch the forward pass for speed, and all rows of
+a batch draw from one random number stream. Under sampling, a candidate's
+predicted properties would depend on \emph{which other candidates happened to
+share its batch} --- a reproducibility disaster that is entirely mine to solve,
+since the authors did not batch.
+
+There was also an incidental discovery: under sampling, the model sometimes
+continues the amino-acid sequence \emph{before} emitting the property vector,
+and can then be cut off mid-answer by the 64-token budget. The released
+notebook catches that in a bare \code{except:}, so those cases silently vanish.
+Under greedy decoding it never happens.
+
+\begin{warnbox}{This choice was later exonerated}
+A reader could reasonably worry that greedy decoding is why my numbers came out
+lower than the paper's. I tested exactly that in
+Section~\ref{sec:stochasticity} and the effect is $+0.0065$ --- two orders of
+magnitude too small. Recorded as assumption A5.
+\end{warnbox}
+
+\section{Step 5: re-running the whole procedure}
+\label{sec:table1}
+
+With everything rebuilt, I ran the cycle-consistency procedure of
+Figure~\ref{fig:cycle} for all eight targets, with $N = 2048$ generation
+attempts each, matching the notebook's budget. About 4.5 GPU-hours.
+
+\begin{table}[htbp]
+\centering\small
+\caption[Table 1 reproduction]{The headline reproduction. ``Pool'' is the
+number of candidates that parsed \emph{and} were novel, and so could be scored.}
+\label{tab:repro}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{set} & \textbf{paper \Rsq} & \textbf{our max} & \textbf{our mean} & \textbf{our median} & \textbf{pool} \\
+\midrule
+F1 & 0.8764 & 0.7221 & $-0.36$ & $-0.03$ & 815 \\
+F2 & 0.8369 & 0.6964 & $-3.57$ & $-1.41$ & 739 \\
+F3 & 0.6889 & \textbf{0.6780} & $-0.36$ & $+0.09$ & 735 \\
+S1 & 0.8899 & 0.7120 & $-6.54$ & $-2.25$ & 712 \\
+S2 & 0.5640 & 0.2234 & $-0.71$ & $-0.67$ & 738 \\
+S3 & 0.7167 & 0.6494 & $-0.37$ & $-0.31$ & 752 \\
+S4 & 0.7843 & 0.3487 & $-0.49$ & $-0.48$ & 710 \\
+S5 & 0.7751 & 0.6233 & $-11.59$ & $-3.61$ & 641 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{warnbox}{Partial reproduction}
+I do not reach the published value on \emph{any} of the eight sets. The gap
+runs from 0.011 (F3, essentially reproduced) to 0.436 (S4), mean 0.27.
+Across all eight, none of roughly 700--800 candidates matched or exceeded the
+published figure.
+
+The mechanism works --- the pipeline does produce sequences whose predicted
+properties approach the request --- but the magnitude I obtain is lower. That is
+a partial reproduction and I describe it as one.
+\end{warnbox}
+
+Two things in this table deserve attention beyond the gap.
+
+\paragraph{The mean and median are terrible.} For six of eight sets, the
+\emph{typical} candidate has negative \Rsq{} --- worse than guessing the average.
+S5's mean is $-11.59$. The maximum is doing enormous work.
+
+\paragraph{The pool is much smaller than the budget.} 2{,}048 attempts yield
+only $\sim$700--800 scoreable candidates. Where did the rest go? About 5\% fail
+to parse. The rest --- the large majority of the loss --- were discarded for not
+being novel. That deserves its own measurement, in
+Section~\ref{sec:regurgitation}.
+
+\subsection{Testing one explanation for the gap}
+\label{sec:stochasticity}
+
+Before attributing the shortfall to anything, one purely statistical mechanism
+had to be ruled out.
+
+The notebook scores candidates with a \emph{sampled} forward pass. So each
+candidate's \Rsq{} is itself a random variable, and a maximum over $N$ noisy
+scores is inflated relative to a maximum over $N$ noiseless ones --- roughly by
+the scale of the scoring noise. My scores are noiseless. Could that alone
+explain 0.27?
+
+I re-scored the \emph{identical} candidate sequences with the notebook's
+sampled decoder --- same sequences, same targets, only the scorer changed.
+
+\begin{table}[htbp]
+\centering\small
+\caption[Scoring stochasticity]{\code{scripts/10b\_scoring\_stochasticity.py}}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{set} & \textbf{max, greedy} & \textbf{max, sampled} & \textbf{inflation} & \textbf{gap remaining} \\
+\midrule
+S1 & 0.7120 & 0.7379 & $+0.026$ & 0.152 \\
+F1 & 0.7221 & 0.7221 & $0.000$ & 0.154 \\
+S4 & 0.3487 & 0.3487 & $0.000$ & 0.436 \\
+S2 & 0.2234 & 0.2234 & $0.000$ & 0.341 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Mean inflation $+0.0065$; scores identical on 97--99\% of candidates. The
+hypothesis is \textbf{rejected}. At this point in the project I recorded the gap
+as unexplained rather than attributing it to anything --- which was the right
+call, because the answer arrived later and from an unexpected direction.
+
+\section{Step 6: the answer, once the Supporting Information turned up}
+\label{sec:exactmatch}
+
+Late in the project I found the supplementary tables appended to the arXiv
+preprint of the same paper (\code{arXiv:2309.10170}, pages 31--38). Wiley's copy
+refuses automated requests, but arXiv does not.
+
+Table~S1 lists the five sequences the paper actually generated. Table~S3 lists,
+for each, the property vector its forward task predicted and the resulting
+\Rsq. So both the input and the expected output are known, and the scorer can
+be tested with no sampling and no search at all.
+
+Extracting those sequences correctly took two attempts and is the subject of
+Section~\ref{sec:tables1}. With them verified:
+
+\begin{goodbox}{The forward task reproduces exactly}
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{set} & \textbf{paper \Rsq} & \textbf{ours} & \textbf{predicted vector vs Table S3} \\
+\midrule
+S1 & 0.8899 & \textbf{0.8899} & \textbf{8/8 slots identical} \\
+S2 & 0.5640 & 0.5176 & 6/8 \\
+S3 & 0.7167 & \textbf{0.7167} & \textbf{8/8} \\
+S4 & 0.7843 & \textbf{0.7843} & \textbf{8/8} \\
+S5 & 0.7751 & \textbf{0.7751} & \textbf{8/8} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Four of five reproduce to four decimal places --- and not merely in \Rsq, but in
+the entire eight-value predicted vector, slot for slot. S2 agrees on its first
+six slots and differs on the last two, consistent with the paper's sampled
+decoding diverging from greedy on a low-confidence tail.
+\end{goodbox}
+
+\begin{keybox}{What this settles}
+The checkpoint, the prompt format, the parser, the normalisation and my
+decoding choice are all \emph{exonerated}. Given the paper's own sequences, the
+scorer returns the paper's own answers.
+
+So the shortfall in Section~\ref{sec:table1} is located precisely: it is in the
+\textbf{inverse task's search}. My 2{,}048 candidates simply did not contain
+sequences as good as the ones the authors found. Their generated sequences are
+also markedly longer --- 1096, 926, 312, 869 and 521 residues against my 530,
+493, 471, 185 and 256 --- so the two searches explored different regions of the
+space. Why theirs found longer and better candidates, I cannot say from the
+information available.
+
+This is a considerably stronger reproduction result than
+Section~\ref{sec:table1} suggests on its own, and it is why these notes present
+the two together.
+\end{keybox}
+
+\subsection{Figure 7, against the paper's own specimens}
+
+With Table~S1 in hand, the motif analysis could finally be run the way the
+paper ran it: each generated sequence against \emph{its own} two BLAST
+relatives, using the Table~S4 motif definitions.
+
+\begin{center}
+\small
+\begin{tabular}{lcl}
+\toprule
+\textbf{set} & \textbf{motif-density correlation} & \textbf{the paper's wording} \\
+\midrule
+S1 & 0.658 & ``particularly evident'' \\
+S2 & \textbf{0.448} & ``congruence is diminished in set 2'' \\
+S3 & \textbf{0.941} & ``particularly evident'' \\
+S4 & \textbf{0.944} & ``particularly evident'' \\
+S5 & 0.660 & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This supports the paper's qualitative claim: set 2 is the weakest by a clear
+margin, exactly as reported, and sets 3 and 4 are strongest. Set 1, which the
+paper groups with 3 and 4, comes out middling here.
+
+\begin{warnbox}{A lesson about substitutes}
+Before I had Table~S1, I ran the same analysis using \emph{nearest database
+neighbours} as stand-ins for the BLAST relatives. That version gave S2 $= 0.99$
+and S4 $= -0.02$ --- close to the reverse of the correct ordering.
+
+A reproduction that had stopped at the substitute specimens would have reported
+something wrong, with no internal sign of trouble. Substituting one input for
+another is sometimes unavoidable, but the substitution is a claim in its own
+right and deserves the same scrutiny as the result.
+\end{warnbox}
+
+\subsection{Descriptors, checked against the paper's own numbers}
+
+Table~S3 also publishes molecular weight, instability index and isoelectric
+point for all fifteen sequences. Recomputing them is an independent check of
+the Figure 5 pipeline:
+
+\begin{center}
+\small
+\begin{tabular}{lc}
+\toprule
+molecular weight & \textbf{15/15} match \\
+isoelectric point & \textbf{15/15} match \\
+instability index & 13/15 match \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The two instability-index misses are both explained. Two sequences contain
+\aaseq{X} --- an ``unknown residue'' code that appears in real database records.
+Biopython refuses to weigh a sequence containing \aaseq{X}, yet the paper
+reports a weight. Recovering the implied mass,
+\[
+  \frac{\text{published MW} - \text{MW with \aaseq{X} dropped}}{\text{number of \aaseq{X}}}
+  = 111.985 \text{ Da}
+\]
+for both sequences independently --- the conventional average residue mass. So
+the paper's tool weighed unknowns as average residues. Applying that convention
+reproduces both weights exactly. The instability index still differs slightly
+(28.88 vs 28.55) because that index is computed from \emph{dipeptides}, and
+removing an \aaseq{X} joins its two neighbours into a pair that was never in the
+sequence. A consequence of the unknown-residue handling, not a disagreement
+about the sequence --- reported rather than tuned away.

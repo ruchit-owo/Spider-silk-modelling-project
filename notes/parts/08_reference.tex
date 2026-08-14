@@ -1,0 +1,216 @@
+\chapter{Reference}
+\label{ch:reference}
+
+\section{Conclusions, stated compactly}
+
+\begin{description}[leftmargin=0cm,style=nextline,itemsep=6pt]
+
+\item[What reproduces exactly.] The checkpoint is the model described
+  (253{,}556{,}736 parameters). It returns the published property vector for the
+  published worked example --- for both printed variants of it. The 1{,}033-pair
+  dataset reconstructs to the exact published count. The normalisation constants
+  were recovered independently and later confirmed against the real Table~S5,
+  all eight. Given the paper's own designed sequences, the forward task returns
+  the published \Rsq{} to four decimals on four of five sets, matching the whole
+  predicted vector slot for slot. Descriptors match on 15/15 molecular weights
+  and isoelectric points.
+
+\item[What reproduces partially.] Running the design procedure end to end, my
+  maximum falls below the published value on all eight targets, mean gap 0.27.
+  Because the scorer reproduces exactly, this is located in the inverse task's
+  \emph{search}, not in the model. Why the authors' search found longer and
+  better candidates, I cannot say.
+
+\item[What the numbers measure.] The headline \Rsq{} is a maximum over a
+  sampling budget that is not stated, of a within-vector self-consistency
+  measure, from a model that returns the exact training label for 71\% of its
+  fine-tuning pairs and emits verbatim training sequences 62\% of the time.
+  Each qualifier is individually reasonable; together they mean the number
+  measures something narrower than it appears to.
+
+\item[What would remove the ambiguity.] Two changes, neither requiring new
+  experiments: state $N$ alongside any best-of-$N$ result, and hold out a fold.
+  On 1{,}033 pairs a held-out fold is cheap, and the baselines suggest it would
+  be informative --- the gap between in-sample and cross-validated performance on
+  this data is the difference between 0.80 and $-0.16$.
+
+\item[The wider point.] Generative design pipelines that chain an inverse task
+  into a forward task and report the agreement are measuring something real.
+  But what they measure depends on the search budget and on how much of the
+  training set the model has retained. Both are cheap to report and usually are
+  not.
+
+\end{description}
+
+\section{The fifteen assumptions}
+
+Every choice the paper does not specify. Full reasoning in
+\code{ASSUMPTIONS.md}.
+
+\begin{longtable}{@{}p{0.7cm}p{6.0cm}p{7.4cm}@{}}
+\toprule
+\textbf{ID} & \textbf{the choice} & \textbf{basis} \\
+\midrule
+\endhead
+A1 & Dataset reconstruction rule & Join on \code{idv\_id}; lands on 1{,}033 exactly \\
+A2 & Normalisation constants & Recovered; verified 0.00047, later confirmed vs Table~S5 \\
+A3 & Validity filter on generations & Twenty standard residues only; rejection rate reported \\
+A4 & Definition of novelty & Paper's exact-match test, plus $k$-mer measures; calibrated in §\ref{sec:exactmatch} \\
+A5 & Greedy forward decoding & 58/60 identical to sampled; batch-invariant \\
+A6 & Inference precision & float16 on GPU; determinism verified at that precision \\
+A7 & Terminal-domain boundaries & 130 / 100 residues, nominal literature values \\
+A8 & Motif set & Superseded: Table~S4 obtained, all 14 entries verified \\
+A9 & Sampling budget $N$ & Treated as a variable; the whole curve reported \\
+A10 & Batched inference & Equivalence to unbatched tested \\
+A11 & Checkpoint revision & Resolved commit recorded and pinnable \\
+A12 & Duplicate sequence labels & Kept; the published count requires it \\
+A13 & Composition accessor & Counted directly; avoids a Biopython API change \\
+A14 & Secondary-structure convention & Both legacy and corrected reported (see D1) \\
+A15 & Amino-acid grouping & Two schemes reported; neither chosen to fit \\
+\bottomrule
+\end{longtable}
+
+\section{The fifteen discrepancies and open points}
+
+\begin{longtable}{@{}p{0.7cm}p{6.0cm}p{7.4cm}@{}}
+\toprule
+\textbf{ID} & \textbf{point} & \textbf{status} \\
+\midrule
+\endhead
+D1 & Figure 5c helix/sheet labels exchanged vs current Biopython & confirmed; upstream correction postdates publication \\
+D2 & Set S3 strength 0.200 where the stated median is 0.310 & confirmed, internal to the paper \\
+D3 & Sampling budget $N$ never stated & clarification; quantified in §\ref{sec:bestofn} \\
+D4 & \Rsq{} is within-vector, not across a test set & clarification \\
+D5 & No held-out set & clarification; stated by the paper itself \\
+D6 & 62.3\% of generations are verbatim training sequences & confirmed \\
+D7 & Supporting Information initially unobtainable & resolved via arXiv preprint \\
+D8 & Paper prints two variants of one worked example & confirmed; my earlier self-blame retracted \\
+D9 & \code{r2\_score} argument order differs between two helpers & clarification; no published number affected \\
+D10 & Shortfall on all eight targets & confirmed; located in the search (§\ref{sec:exactmatch}) \\
+D11 & Forward task returns 71\% of training labels verbatim & confirmed \\
+D12 & A reviewer comment described a different paper's figure & clarification \\
+D13 & \textbf{Withdrawn.} Alleged motif sign discrepancy & \textbf{retracted}; all 14 entries agree \\
+D14 & Recovered constants match published Table~S5 exactly & confirmed \\
+D15 & Table~S1 extraction & failed, then rewritten and verified \\
+\bottomrule
+\end{longtable}
+
+\section{Where every number comes from}
+
+\begin{longtable}{@{}p{6.6cm}p{7.5cm}@{}}
+\toprule
+\textbf{script} & \textbf{produces} \\
+\midrule
+\endhead
+\code{00\_check\_env.py} & architecture check, pinned revision \\
+\code{01\_smoke\_test.py} & both tasks end to end, cost projection \\
+\code{01b\_forward\_decoding\_diagnostics.py} & the evidence for assumption A5 \\
+\code{02\_reproduce\_table1.py} & the eight candidate pools (the long run) \\
+\code{03\_build\_dataset.py} & the 1{,}033 pairs; normalisation check \\
+\code{04\_forward\_eval\_dataset.py} & in-sample forward accuracy \\
+\code{04b\_memorisation\_audit.py} & the 71.3\% figure \\
+\code{05\_protein\_properties.py} & Figure 5 descriptors \\
+\code{06\_motif\_analysis.py} & Figure 7 motifs \\
+\code{07\_novelty\_audit.py} & the 62.3\% verbatim-copy rate \\
+\code{08\_extract\_table\_s1.py} & the paper's own sequences, MW-verified \\
+\code{09\_verify\_published\_sequences.py} & the exact-match result \\
+\code{09b\_verify\_against\_tables\_s2\_s3.py} & descriptor and novelty cross-checks \\
+\code{10\_ablation\_bestofn.py} & best-of-$N$ curves \\
+\code{10b\_scoring\_stochasticity.py} & the rejected explanation for the gap \\
+\code{11\_ablation\_sequence\_content.py} & the sequence ablations \\
+\code{12\_baseline\_composition.py} & the composition baselines \\
+\code{13\_extension\_nonmasp.py} & out-of-distribution families \\
+\code{14\_composition\_association.py} & composition association + null \\
+\code{99\_make\_figures.py} & all six figures, from saved results \\
+\bottomrule
+\end{longtable}
+
+Every script writes a JSON manifest under \code{results/} recording the git
+commit, working-tree cleanliness, model revision, seed, platform, GPU and the
+version of every library used.
+
+\section{Glossary}
+
+\begin{description}[leftmargin=0cm,style=nextline,itemsep=3pt]
+\item[Amino acid] One link in a protein chain; twenty kinds, written as letters.
+\item[Attention] The mechanism by which each position in a transformer draws on
+  every other, with learned, content-dependent weights.
+\item[Autoregressive] Generating one token at a time, each conditioned on all
+  previous ones.
+\item[Best-of-$N$] Generating $N$ candidates and keeping the highest-scoring.
+  The expected result rises with $N$ regardless of model quality.
+\item[BPE] Byte-pair encoding; builds a vocabulary by repeatedly merging the
+  most frequent adjacent pair.
+\item[Decoding] Turning next-token probabilities into an actual choice: greedy,
+  or sampling with temperature / top-$k$ / top-$p$.
+\item[Dragline] The silk a spider hangs from; made of MaSp; the silk that gets
+  mechanically tested.
+\item[Fine-tuning] Further training of a pretrained model on a specific task.
+\item[Held-out] Data withheld from training, used to measure generalisation.
+  There is none here.
+\item[In-sample] Measured on training data. An upper bound, not an estimate.
+\item[Instability index] A ProtParam statistic computed from dipeptide
+  frequencies; estimates whether a protein is stable.
+\item[Isoelectric point] The pH at which a protein carries no net charge.
+\item[MaSp] Major ampullate spidroin; the dragline protein; the paper's subject.
+\item[Motif] A short recurring sequence pattern, e.g.\ poly-A, GGX, GPGXX.
+\item[Normalisation] Mapping raw measurements to $[0,1]$ by min--max scaling.
+\item[Parameter] One learned number in a model. 253.6 million here.
+\item[pLDDT] AlphaFold2's per-residue confidence score. 40--60 is low.
+\item[Poly-A] A run of alanines; forms $\beta$-sheet nanocrystals; supplies
+  strength and stiffness.
+\item[ProtParam] A standard tool computing descriptors from a sequence.
+\item[\Rsq] $1 - \mathrm{SS}_{\text{res}}/\mathrm{SS}_{\text{tot}}$. Negative
+  values mean worse than guessing the mean.
+\item[RoPE] Rotary positional embedding; encodes position by rotation, so
+  relative offsets are what the attention sees.
+\item[Spidroin] A spider silk protein.
+\item[Temperature] A decoding parameter rescaling the distribution; lower is
+  more deterministic.
+\item[Token] The unit a model consumes; here, a chunk of amino acids.
+\item[Toughness] Energy absorbed per unit volume before breaking; the area
+  under the stress--strain curve.
+\item[Within-vector \Rsq] The paper's definition: \Rsq{} across the eight
+  property entries of one sequence.
+\end{description}
+
+\section{Reproducing the reproduction}
+
+\begin{lstlisting}[style=plain]
+python -m venv .venv && .venv/Scripts/activate
+pip install torch --index-url https://download.pytorch.org/whl/cu126
+pip install -e ".[dev]"
+
+git clone https://github.com/lamm-mit/SilkomeGPT _ref/SilkomeGPT-main
+# plus the two Silkome files; see data/raw/README.md
+
+python scripts/00_check_env.py
+python scripts/03_build_dataset.py --fasta <fasta> --mech <csv>
+python scripts/02_reproduce_table1.py --n 2048     # ~4.5 h on a 6 GB GPU
+python scripts/99_make_figures.py
+\end{lstlisting}
+
+Two things deliberately do not ship: the Silkome primary data and the authors'
+checkpoint, neither of which is mine to redistribute. Both are freely
+available, and \code{data/raw/README.md} says exactly what to fetch.
+
+\section*{Sources}
+\addcontentsline{toc}{section}{Sources}
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item W.~Lu, D.~L.~Kaplan, M.~J.~Buehler. Generative Modeling, Design, and
+  Analysis of Spider Silk Protein Sequences for Enhanced Mechanical Properties.
+  \emph{Adv.\ Funct.\ Mater.} \textbf{34}, 2311324 (2024).
+  \href{https://doi.org/10.1002/adfm.202311324}{doi:10.1002/adfm.202311324}.
+  Preprint with the supplementary tables:
+  \href{https://arxiv.org/abs/2309.10170}{arXiv:2309.10170}.
+\item K.~Arakawa \emph{et al.} 1000 spider silkomes: linking sequences to silk
+  physical properties. \emph{Sci.\ Adv.} \textbf{8}, eabo6043 (2022).
+\item A.~Pandey, W.~Chen, S.~Keten. Primary sequence-based data-constrained
+  machine learning framework to predict mechanical properties of the spider
+  silk. \emph{Commun.\ Mater.} (2024). \emph{(Source of the composition
+  analysis in §\ref{sec:nullretraction}, not of anything in Lu et al.)}
+\item Released model and notebook:
+  \href{https://github.com/lamm-mit/SilkomeGPT}{github.com/lamm-mit/SilkomeGPT},
+  \href{https://huggingface.co/lamm-mit/SilkomeGPT}{huggingface.co/lamm-mit/SilkomeGPT}.
+\end{enumerate}

@@ -1,0 +1,127 @@
+\chapter{How to read this, and what the project was}
+
+\section{The one-paragraph version}
+
+A group at MIT trained a large language model --- the same kind of machine that
+powers a chatbot, but fed protein sequences instead of English --- to do two
+things with spider silk proteins. Given a protein sequence, predict how strong
+and stretchy the resulting silk fibre will be. And, in reverse, given a wish
+list of mechanical properties, invent a protein sequence that should have them.
+They published numbers showing the two directions agree with each other. I
+downloaded their model, rebuilt their dataset from raw sources, re-ran their
+procedure, and then ran four further experiments they did not run, to work out
+what their headline numbers actually measure.
+
+\section{Why reproduce anything at all}
+
+A published result is a claim about what would happen if someone else did the
+same thing. Most of the time nobody checks. When somebody does check, three
+outcomes are possible, and all three are useful:
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+  \item \term{It reproduces.} The claim is now stronger than it was, because it
+        has survived an attempt to break it.
+  \item \term{It reproduces, but the number means something narrower than it
+        appeared to.} This is the most common outcome in machine learning, and
+        it is what happened here. Nothing was wrong; the number was
+        under-specified.
+  \item \term{It does not reproduce.} Rare, and worth knowing.
+\end{enumerate}
+
+This project landed mostly in category~1 with an important slice of
+category~2. The model reproduces \emph{exactly} --- to four decimal places, on
+the paper's own inputs. What does not reproduce is my own attempt to
+\emph{search} for good designs, and understanding why that is a different thing
+from the model failing took most of the work.
+
+\section{The shape of the argument}
+
+Figure~\ref{fig:roadmap} is the whole document on one page. Nothing in it will
+mean much yet; come back to it after Chapter~\ref{ch:paper}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw=greyc!70,fill=boxbg,rounded corners=2pt,inner sep=6pt,
+              text width=3.1cm,align=center,minimum height=1.0cm},
+  pbox/.style={box,draw=papercol,fill=papercol!8},
+  obox/.style={box,draw=ourscol,fill=ourscol!8},
+  ar/.style={-{Stealth[length=2.5mm]},thick,greyc!80},
+]
+\node[pbox] (paper) {\textbf{The paper}\\ trains a model, reports \Rsq};
+\node[obox,below=0.9cm of paper] (rebuild) {\textbf{Rebuild}\\ dataset, constants, checkpoint};
+\node[obox,below=0.9cm of rebuild] (repro) {\textbf{Re-run}\\ the design procedure};
+\node[obox,right=1.5cm of repro] (short) {\textbf{Shortfall}\\ on all 8 targets};
+\node[obox,right=1.5cm of short] (exact) {\textbf{Exact match}\\ on the paper's own sequences};
+\node[obox,below=0.9cm of repro] (ext) {\textbf{Four extensions}\\ what is the model doing?};
+\node[obox,below=0.9cm of ext] (mem) {\textbf{Answer}\\ largely retrieval};
+
+\draw[ar] (paper) -- (rebuild);
+\draw[ar] (rebuild) -- (repro);
+\draw[ar] (repro) -- (short);
+\draw[ar] (short) -- (exact);
+\draw[ar] (repro) -- (ext);
+\draw[ar] (ext) -- (mem);
+
+\node[right=0.25cm of exact,text width=3.0cm,align=left,font=\scriptsize\itshape,
+      text=ourscol]
+  {so the gap is in the \emph{search}, not the model};
+\node[left=0.25cm of mem,text width=2.6cm,align=right,font=\scriptsize\itshape,
+      text=ourscol]
+  {71\% of training labels returned verbatim};
+\end{tikzpicture}
+\caption[Roadmap]{The argument in one figure. Blue is the original paper;
+orange is this project. Read it again after Chapter~\ref{ch:paper}.}
+\label{fig:roadmap}
+\end{figure}
+
+\section{Conventions used throughout}
+
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \paperterm{Blue bold} marks something belonging to the original paper.
+  \item \ourterm{Orange bold} marks something this project added or decided.
+  \item Amino-acid sequences are set as \aaseq{GAGAGSGAAG}.
+  \item Every number I quote as a result was produced by a script in the
+        project and is traceable to a file; the mapping is in
+        Chapter~\ref{ch:reference}.
+\end{itemize}
+
+Three kinds of highlighted box appear:
+
+\begin{keybox}{A concept box looks like this}
+Used for definitions and for ideas that need to be held in mind for several
+pages.
+\end{keybox}
+
+\begin{warnbox}{A caution box looks like this}
+Used for traps, for things I got wrong, and for places where a number is easy
+to over-read.
+\end{warnbox}
+
+\begin{goodbox}{A result box looks like this}
+Used for measured outcomes.
+\end{goodbox}
+
+\section{A note on the three retractions}
+
+Three times in this project I stated something, and it was wrong, and I had to
+withdraw it. They are not hidden in a footnote --- Chapter~\ref{ch:mistakes} is
+about them, because they turned out to be the most transferable thing I
+learned. Briefly, they were:
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+  \item A claim that three of the paper's motif definitions contradicted the
+        source they cite. \term{Cause:} I read a two-column PDF table as
+        linear text, and the columns interleaved.
+  \item A set of \Rsq{} values suggesting the paper's model failed on the
+        paper's own sequences. \term{Cause:} my extraction of those sequences
+        was silently corrupt, in a way that made every length come out right.
+  \item A finding that a composition analysis recovered 12 of 14 published
+        residues. \term{Cause:} the selection rule could not fail; random
+        noise scored better.
+\end{enumerate}
+
+The pattern is the useful part. All three survived internal consistency
+checks and all three were caught by comparison against an \emph{external}
+published quantity that had played no part in generating the claim.
